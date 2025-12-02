@@ -54,8 +54,8 @@ const Index = () => {
       options: ["Hot"],
     },
   ];
-  const syrups = ["Pumpkin Spice", "French Vanilla", "Vanilla"];
-  const milks = ["Lactose Whole Milk", "Oat Milk", "Eggnog"];
+  const syrups = ["SF Pumpkin Spice", "SF French Vanilla", "SF Vanilla"];
+  const milks = ["Lactose-free Milk", "Oat Milk", "Eggnog"];
   return (
     <div className="min-h-screen bg-background text-foreground">
       <Snowfall />
