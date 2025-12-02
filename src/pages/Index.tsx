@@ -23,6 +23,31 @@ type Drink = {
   comingSoon?: boolean;
 };
 
+const getDrinkDescription = (drink: string | null): string => {
+  switch (drink) {
+    case "Latte":
+      return "Smooth espresso with steamed milk, balanced and creamy.";
+    case "Americano":
+      return "Rich espresso topped with hot water for a smooth, long coffee.";
+    case "Flat White":
+      return "Silky microfoam over a bold double shot of espresso.";
+    case "Cappuccino":
+      return "A classic balance of espresso, silky milk, and airy foam. Topped with a dusting of cinnamon.";
+    case "Mocha":
+      return "Traditional Colombian-style hot chocolate with a dose of espresso, rich and comforting.";
+    case "Matcha":
+      return "Ceremonial-grade matcha, gently whisked for a bright, earthy cup.";
+    case "Hot Chocolate":
+      return "Traditional Colombian-style hot chocolate, rich and comforting.";
+    case "London Fog":
+      return "Earl Grey tea with steamed milk and vanilla notes.";
+    case "Honey Citrus Peach Tea":
+      return "A soothing blend of peach, lemon, and ginger—warm, bright, and comforting.";
+    default:
+      return "";
+  }
+};
+
 const Snowfall = () => {
   const flakes = Array.from({ length: 40 });
 
@@ -76,8 +101,16 @@ const Index = () => {
       comingSoon: true,
     },
     {
-      title: "Colombian Hot Chocolate",
+      title: "Hot Chocolate",
       options: ["Hot"],
+    },
+    {
+      title: "London Fog",
+      options: ["Hot"],
+    },
+    {
+      title: "Honey Citrus Peach Tea",
+      options: ["Hot", "Iced"],
     },
   ];
   const sweeteners = ["None", "Sugar", "SF Pumpkin Spice", "SF French Vanilla", "SF Vanilla"];
@@ -96,9 +129,12 @@ const Index = () => {
   const allDrinks: Drink[] = [...coffeeDrinks, ...specialtyDrinks];
   const activeDrink = allDrinks.find((drink) => drink.title === currentDrink) ?? null;
   const temperatureOptions = activeDrink?.options ?? [];
-  const isHotChocolate = currentDrink === "Colombian Hot Chocolate";
+  const isHotChocolate = currentDrink === "Hot Chocolate";
   const isAmericano = currentDrink === "Americano";
   const isCoffeeDrink = coffeeDrinks.some((drink) => drink.title === currentDrink);
+  const isLondonFog = currentDrink === "London Fog";
+  const isCitrusPeachTea = currentDrink === "Honey Citrus Peach Tea";
+  const drinkDescription = getDrinkDescription(currentDrink);
 
   const openOrderFor = (title: string) => {
     const drink = allDrinks.find((d) => d.title === title);
@@ -111,9 +147,9 @@ const Index = () => {
     setSelectedShots(shotOptions[0] ?? "2 shots");
     setSelectedMilk(milks[0] ?? "");
     setSelectedSweetener(sweeteners[0] ?? "");
-    // If there are no customizable options (like Colombian Hot Chocolate),
+    // If there are no customizable options (like Hot Chocolate),
     // jump straight to the name step.
-    if (title === "Colombian Hot Chocolate") {
+    if (title === "Hot Chocolate") {
       setOrderStep("name");
     } else {
       setOrderStep("options");
@@ -130,8 +166,8 @@ const Index = () => {
           ? `Temp: ${selectedTemperature}`
           : null;
 
-        const includeMilk = !isHotChocolate && !isAmericano;
-        const includeSweetener = !isHotChocolate;
+        const includeMilk = !isHotChocolate && !isAmericano && !isCitrusPeachTea;
+        const includeSweetener = !isHotChocolate && !isLondonFog && !isCitrusPeachTea;
         const milkLine =
           includeMilk && selectedMilk ? `Milk: ${selectedMilk}` : null;
         const sweetenerLine =
@@ -163,7 +199,7 @@ const Index = () => {
       }, 3500);
       return () => clearTimeout(timeout);
     }
-  }, [orderStep, currentDrink, selectedTemperature, selectedMilk, selectedSweetener, selectedShots, customerName, isHotChocolate, isAmericano, isCoffeeDrink]);
+  }, [orderStep, currentDrink, selectedTemperature, selectedMilk, selectedSweetener, selectedShots, customerName, isHotChocolate, isAmericano, isCoffeeDrink, isLondonFog, isCitrusPeachTea]);
   return (
     <div className="min-h-screen bg-background text-foreground">
       <Snowfall />
@@ -244,7 +280,7 @@ const Index = () => {
                     </span>
                   </div>
                   <div className="flex items-center justify-between gap-4">
-                    <span>Colombian Hot Chocolate</span>
+                    <span>Hot Chocolate</span>
                     <span className="text-xs uppercase tracking-[0.2em] text-foreground/60">
                       Signature Sips
                     </span>
@@ -288,10 +324,11 @@ const Index = () => {
                     <div
                       key={idx}
                       style={{ animationDelay: `${idx * 0.05}s` }}
-                      className="animate-fade-in"
+                      className="animate-fade-in h-full"
                     >
                       <MenuCard
                         {...drink}
+                        description={getDrinkDescription(drink.title)}
                         onSelect={!drink.comingSoon ? () => openOrderFor(drink.title) : undefined}
                       />
                     </div>
@@ -316,10 +353,11 @@ const Index = () => {
                     <div
                       key={idx}
                       style={{ animationDelay: `${idx * 0.05}s` }}
-                      className="animate-fade-in"
+                      className="animate-fade-in h-full"
                     >
                       <MenuCard
                         {...drink}
+                        description={getDrinkDescription(drink.title)}
                         onSelect={!drink.comingSoon ? () => openOrderFor(drink.title) : undefined}
                       />
                     </div>
@@ -382,9 +420,9 @@ const Index = () => {
             <DialogTitle className="text-3xl font-bold">
               {currentDrink ? `${currentDrink}` : "Order drink"}
             </DialogTitle>
-            {!isHotChocolate && orderStep !== "animation" && orderStep !== "name" && orderStep !== "success" && (
-              <DialogDescription>
-                Choose your preferences for this drink.
+            {drinkDescription && (
+              <DialogDescription className="mt-1">
+                {drinkDescription}
               </DialogDescription>
             )}
           </DialogHeader>
@@ -446,7 +484,7 @@ const Index = () => {
 
               {!isHotChocolate && (
                 <>
-                  {!isAmericano && (
+                  {!isAmericano && !isCitrusPeachTea && (
                     <div className="space-y-3">
                       <Label className="text-xs uppercase tracking-[0.2em] text-muted-foreground">
                         Milk
@@ -471,28 +509,30 @@ const Index = () => {
                     </div>
                   )}
 
-                  <div className="space-y-3">
-                    <Label className="text-xs uppercase tracking-[0.2em] text-muted-foreground">
-                      Sweetener
-                    </Label>
-                    <RadioGroup
-                      value={selectedSweetener}
-                      onValueChange={setSelectedSweetener}
-                      className="grid gap-2 sm:grid-cols-2"
-                    >
-                      {sweeteners.map((sweetener) => (
-                        <label
-                          key={sweetener}
-                          className={`flex cursor-pointer items-center gap-2 rounded-full border border-border/70 bg-card/60 px-3 py-2 text-sm hover:border-primary/60 transition-all duration-200 ${
-                            selectedSweetener === sweetener ? "opacity-100" : "opacity-50"
-                          }`}
-                        >
-                          <RadioGroupItem value={sweetener} />
-                          <span>{sweetener}</span>
-                        </label>
-                      ))}
-                    </RadioGroup>
-                  </div>
+                  {!isLondonFog && !isCitrusPeachTea && (
+                    <div className="space-y-3">
+                      <Label className="text-xs uppercase tracking-[0.2em] text-muted-foreground">
+                        Sweetener
+                      </Label>
+                      <RadioGroup
+                        value={selectedSweetener}
+                        onValueChange={setSelectedSweetener}
+                        className="grid gap-2 sm:grid-cols-2"
+                      >
+                        {sweeteners.map((sweetener) => (
+                          <label
+                            key={sweetener}
+                            className={`flex cursor-pointer items-center gap-2 rounded-full border border-border/70 bg-card/60 px-3 py-2 text-sm hover:border-primary/60 transition-all duration-200 ${
+                              selectedSweetener === sweetener ? "opacity-100" : "opacity-50"
+                            }`}
+                          >
+                            <RadioGroupItem value={sweetener} />
+                            <span>{sweetener}</span>
+                          </label>
+                        ))}
+                      </RadioGroup>
+                    </div>
+                  )}
                 </>
               )}
             </div>

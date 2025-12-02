@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Link } from "react-router-dom";
 import { collection, doc, onSnapshot, orderBy, query, Timestamp, updateDoc } from "firebase/firestore";
 import { db } from "@/lib/firebase";
@@ -13,6 +13,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import logo from "@/assets/logo.png";
+import notifSound from "@/assets/notif.mp3";
 
 const Snowfall = () => {
   const flakes = Array.from({ length: 40 });
@@ -64,8 +65,14 @@ type Order = {
 const Orders = () => {
   const [orders, setOrders] = useState<Order[]>([]);
   const [loading, setLoading] = useState(true);
+  const audioRef = useRef<HTMLAudioElement | null>(null);
+  const hasInitializedRef = useRef(false);
+  const previousOrderIdsRef = useRef<Set<string>>(new Set());
 
   useEffect(() => {
+    // Prepare notification sound instance once
+    audioRef.current = new Audio(notifSound);
+
     const q = query(collection(db, "orders"), orderBy("createdAt", "desc"));
 
     const unsubscribe = onSnapshot(
@@ -79,13 +86,36 @@ const Orders = () => {
             temperature: data.temperature ?? null,
             shots: data.shots ?? null,
             milk: data.milk ?? null,
-            sweetener: data.sweetener ?? null,
+            sweetener: data.sweetener && data.sweetener !== "None" ? data.sweetener : null,
             name: data.name ?? null,
             createdAt: data.createdAt ? data.createdAt.toDate() : null,
             summaryLines: data.summaryLines,
             status: data.status ?? "pending",
           };
         });
+
+        // Detect newly added orders (after initial load) and play notification
+        const nextIds = new Set(next.map((order) => order.id));
+        if (hasInitializedRef.current) {
+          let hasNewOrder = false;
+          for (const id of nextIds) {
+            if (!previousOrderIdsRef.current.has(id)) {
+              hasNewOrder = true;
+              break;
+            }
+          }
+
+          if (hasNewOrder && audioRef.current) {
+            void audioRef.current.play().catch((error) => {
+              // Autoplay may be blocked by the browser; log and continue silently
+              console.error("Failed to play notification sound:", error);
+            });
+          }
+        } else {
+          hasInitializedRef.current = true;
+        }
+        previousOrderIdsRef.current = nextIds;
+
         setOrders(next);
         setLoading(false);
       },

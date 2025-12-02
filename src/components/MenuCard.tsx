@@ -2,17 +2,18 @@ import { Card } from "@/components/ui/card";
 
 interface MenuCardProps {
   title: string;
+  description?: string;
   options?: string[];
   comingSoon?: boolean;
   onSelect?: () => void;
 }
 
-export const MenuCard = ({ title, options, comingSoon, onSelect }: MenuCardProps) => {
+export const MenuCard = ({ title, description, options, comingSoon, onSelect }: MenuCardProps) => {
   const isInteractive = !!onSelect && !comingSoon;
 
   return (
     <Card
-      className={`p-6 bg-card transition-all duration-300 border-2 border-border rounded-sm ${
+      className={`h-full flex flex-col p-6 bg-card transition-all duration-300 border-2 border-border rounded-sm ${
         isInteractive ? "cursor-pointer hover:border-primary hover:bg-card/80" : "opacity-80"
       }`}
       onClick={isInteractive ? onSelect : undefined}
@@ -30,6 +31,11 @@ export const MenuCard = ({ title, options, comingSoon, onSelect }: MenuCardProps
             </span>
           )}
         </div>
+        {description && (
+          <p className="text-xs text-muted-foreground leading-relaxed">
+            {description}
+          </p>
+        )}
         {options && options.length > 0 && (
           <div className="flex flex-wrap gap-2">
             {options.map((option, idx) => (
