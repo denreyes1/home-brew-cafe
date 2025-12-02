@@ -2,39 +2,35 @@ import { MenuCard } from "@/components/MenuCard";
 import { Button } from "@/components/ui/button";
 import { Mail } from "lucide-react";
 import logo from "@/assets/logo.png";
-
 const Index = () => {
-  const coffeeDrinks = [
-    { title: "Latte", options: ["Iced", "Hot"] },
-    { title: "Flat White" },
-    { title: "Cappuccino" },
-  ];
-
-  const specialtyDrinks = [
-    { title: "Matcha", options: ["Iced", "Hot"] },
-    { title: "Colombian Hot Chocolate" },
-  ];
-
+  const coffeeDrinks = [{
+    title: "Latte",
+    options: ["Iced", "Hot"]
+  }, {
+    title: "Flat White"
+  }, {
+    title: "Cappuccino"
+  }];
+  const specialtyDrinks = [{
+    title: "Matcha",
+    options: ["Iced", "Hot"]
+  }, {
+    title: "Colombian Hot Chocolate"
+  }];
   const syrups = ["Pumpkin Spice", "French Vanilla", "Vanilla"];
   const milks = ["Lactose Free Whole Milk", "Oat Milk"];
-
-  return (
-    <div className="min-h-screen">
+  return <div className="min-h-screen">
       {/* Hero Section */}
       <section className="relative h-screen flex items-center justify-center overflow-hidden bg-background">
         <div className="relative z-10 text-center px-4 max-w-4xl mx-auto animate-fade-in">
           <img src={logo} alt="D&A Café" className="w-48 h-48 mx-auto mb-8" />
-          <h1 className="text-6xl md:text-8xl font-bold mb-6 text-foreground tracking-wider">
-            Welcome to D&A Café
-          </h1>
+          <h1 className="text-6xl md:text-8xl font-bold mb-6 text-foreground tracking-wider">BIENVENIDO A NUESTRA CASA</h1>
           <p className="text-xl md:text-2xl text-muted-foreground mb-8 max-w-2xl mx-auto">
             Experience artisanal coffee crafted with care in a cozy, intimate setting
           </p>
-          <Button
-            size="lg"
-            className="bg-primary hover:bg-primary/90 text-primary-foreground shadow-elevated text-lg px-8 py-6 font-bold uppercase tracking-wider"
-            onClick={() => document.getElementById("menu")?.scrollIntoView({ behavior: "smooth" })}
-          >
+          <Button size="lg" className="bg-primary hover:bg-primary/90 text-primary-foreground shadow-elevated text-lg px-8 py-6 font-bold uppercase tracking-wider" onClick={() => document.getElementById("menu")?.scrollIntoView({
+          behavior: "smooth"
+        })}>
             Explore Menu
           </Button>
         </div>
@@ -54,11 +50,11 @@ const Index = () => {
           <div className="mb-16">
             <h3 className="text-3xl md:text-4xl font-semibold mb-6 text-primary tracking-wide">Coffee Classics</h3>
             <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {coffeeDrinks.map((drink, idx) => (
-                <div key={idx} style={{ animationDelay: `${idx * 0.1}s` }} className="animate-fade-in">
+              {coffeeDrinks.map((drink, idx) => <div key={idx} style={{
+              animationDelay: `${idx * 0.1}s`
+            }} className="animate-fade-in">
                   <MenuCard {...drink} />
-                </div>
-              ))}
+                </div>)}
             </div>
           </div>
 
@@ -66,11 +62,11 @@ const Index = () => {
           <div className="mb-16">
             <h3 className="text-3xl md:text-4xl font-semibold mb-6 text-secondary tracking-wide">Specialty Drinks</h3>
             <div className="grid md:grid-cols-2 gap-6">
-              {specialtyDrinks.map((drink, idx) => (
-                <div key={idx} style={{ animationDelay: `${idx * 0.1}s` }} className="animate-fade-in">
+              {specialtyDrinks.map((drink, idx) => <div key={idx} style={{
+              animationDelay: `${idx * 0.1}s`
+            }} className="animate-fade-in">
                   <MenuCard {...drink} />
-                </div>
-              ))}
+                </div>)}
             </div>
           </div>
 
@@ -81,14 +77,9 @@ const Index = () => {
                 Flavor Syrups
               </h3>
               <div className="flex flex-wrap gap-3">
-                {syrups.map((syrup, idx) => (
-                  <span
-                    key={idx}
-                    className="px-4 py-2 bg-accent/20 text-accent-foreground rounded-sm border-2 border-accent font-medium uppercase text-sm tracking-wide"
-                  >
+                {syrups.map((syrup, idx) => <span key={idx} className="px-4 py-2 bg-accent/20 text-accent-foreground rounded-sm border-2 border-accent font-medium uppercase text-sm tracking-wide">
                     {syrup}
-                  </span>
-                ))}
+                  </span>)}
               </div>
             </div>
 
@@ -97,14 +88,9 @@ const Index = () => {
                 Milk Options
               </h3>
               <div className="flex flex-wrap gap-3">
-                {milks.map((milk, idx) => (
-                  <span
-                    key={idx}
-                    className="px-4 py-2 bg-accent/20 text-accent-foreground rounded-sm border-2 border-accent font-medium uppercase text-sm tracking-wide"
-                  >
+                {milks.map((milk, idx) => <span key={idx} className="px-4 py-2 bg-accent/20 text-accent-foreground rounded-sm border-2 border-accent font-medium uppercase text-sm tracking-wide">
                     {milk}
-                  </span>
-                ))}
+                  </span>)}
               </div>
             </div>
           </div>
@@ -120,10 +106,7 @@ const Index = () => {
             Our home café operates by appointment. Get in touch to schedule your visit and enjoy a
             personalized coffee experience.
           </p>
-          <Button
-            size="lg"
-            className="bg-primary hover:bg-primary/90 text-primary-foreground shadow-elevated text-lg px-8 py-6 font-bold uppercase tracking-wider"
-          >
+          <Button size="lg" className="bg-primary hover:bg-primary/90 text-primary-foreground shadow-elevated text-lg px-8 py-6 font-bold uppercase tracking-wider">
             Book Your Visit
           </Button>
         </div>
@@ -135,8 +118,6 @@ const Index = () => {
           <p>© 2024 My Home Café. Crafted with love and caffeine.</p>
         </div>
       </footer>
-    </div>
-  );
+    </div>;
 };
-
 export default Index;
