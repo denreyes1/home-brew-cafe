@@ -73,13 +73,13 @@ const Index = () => {
       options: ["Hot"],
     },
   ];
-  const syrups = ["None", "SF Pumpkin Spice", "SF French Vanilla", "SF Vanilla"];
+  const sweeteners = ["None", "Sugar", "SF Pumpkin Spice", "SF French Vanilla", "SF Vanilla"];
   const milks = ["Lactose-free Milk", "Oat Milk", "Eggnog"];
 
   const [isOrderOpen, setIsOrderOpen] = useState(false);
   const [currentDrink, setCurrentDrink] = useState<string | null>(null);
   const [selectedMilk, setSelectedMilk] = useState(milks[0] ?? "");
-  const [selectedSyrup, setSelectedSyrup] = useState(syrups[0] ?? "");
+  const [selectedSweetener, setSelectedSweetener] = useState(sweeteners[0] ?? "");
   const [selectedTemperature, setSelectedTemperature] = useState<string | null>(null);
   const [orderStep, setOrderStep] = useState<"options" | "name" | "animation" | "success">("options");
   const [customerName, setCustomerName] = useState("");
@@ -98,7 +98,7 @@ const Index = () => {
       setSelectedTemperature(null);
     }
     setSelectedMilk(milks[0] ?? "");
-    setSelectedSyrup(syrups[0] ?? "");
+    setSelectedSweetener(sweeteners[0] ?? "");
     // If there are no customizable options (like Colombian Hot Chocolate),
     // jump straight to the name step.
     if (title === "Colombian Hot Chocolate") {
@@ -118,11 +118,11 @@ const Index = () => {
           ? `Temp: ${selectedTemperature}`
           : null;
 
-        const includeMilkAndSyrup = !isHotChocolate;
+        const includeMilkAndSweetener = !isHotChocolate;
         const milkLine =
-          includeMilkAndSyrup && selectedMilk ? `Milk: ${selectedMilk}` : null;
-        const syrupLine =
-          includeMilkAndSyrup && selectedSyrup ? `Sweet: ${selectedSyrup}` : null;
+          includeMilkAndSweetener && selectedMilk ? `Milk: ${selectedMilk}` : null;
+        const sweetenerLine =
+          includeMilkAndSweetener && selectedSweetener ? `Sweet: ${selectedSweetener}` : null;
 
         const nameLine = customerName
           ? `Name: ${customerName}`
@@ -134,7 +134,7 @@ const Index = () => {
           `Drink: ${drinkName}`,
           temperatureLine,
           milkLine,
-          syrupLine,
+          sweetenerLine,
           nameLine,
         ].filter(Boolean) as string[];
 
@@ -149,7 +149,7 @@ const Index = () => {
       }, 3500);
       return () => clearTimeout(timeout);
     }
-  }, [orderStep, currentDrink, selectedTemperature, selectedMilk, selectedSyrup, customerName, isHotChocolate]);
+  }, [orderStep, currentDrink, selectedTemperature, selectedMilk, selectedSweetener, customerName, isHotChocolate]);
   return (
     <div className="min-h-screen bg-background text-foreground">
       <Snowfall />
@@ -236,7 +236,7 @@ const Index = () => {
                     </span>
                   </div>
                   <div className="pt-2 text-xs text-muted-foreground/80">
-                    Custom syrups, alternative milks, and iced options available.
+                    Sweeteners, alternative milks, and iced options available.
                   </div>
                 </div>
               </aside>
@@ -317,15 +317,15 @@ const Index = () => {
               <div className="space-y-6 rounded-3xl border border-border/60 bg-card/40 p-6">
                 <div>
                   <h3 className="text-sm uppercase tracking-[0.25em] text-muted-foreground">
-                    Flavor Syrups
+                    Sweeteners
                   </h3>
                   <div className="mt-4 flex flex-wrap gap-2">
-                    {syrups.map((syrup, idx) => (
+                    {sweeteners.map((sweetener, idx) => (
                       <span
                         key={idx}
                         className="px-3 py-1 text-xs font-medium uppercase tracking-[0.16em] rounded-full border border-muted/60 bg-muted/15 text-foreground/80"
                       >
-                        {syrup}
+                        {sweetener}
                       </span>
                     ))}
                   </div>
@@ -429,22 +429,22 @@ const Index = () => {
 
                   <div className="space-y-3">
                     <Label className="text-xs uppercase tracking-[0.2em] text-muted-foreground">
-                      Syrup
+                      Sweetener
                     </Label>
                     <RadioGroup
-                      value={selectedSyrup}
-                      onValueChange={setSelectedSyrup}
+                      value={selectedSweetener}
+                      onValueChange={setSelectedSweetener}
                       className="grid gap-2 sm:grid-cols-2"
                     >
-                      {syrups.map((syrup) => (
+                      {sweeteners.map((sweetener) => (
                         <label
-                          key={syrup}
+                          key={sweetener}
                         className={`flex cursor-pointer items-center gap-2 rounded-full border border-border/70 bg-card/60 px-3 py-2 text-sm hover:border-primary/60 transition-all duration-200 ${
-                            selectedSyrup === syrup ? "opacity-100" : "opacity-50"
+                            selectedSweetener === sweetener ? "opacity-100" : "opacity-50"
                           }`}
                         >
-                          <RadioGroupItem value={syrup} />
-                          <span>{syrup}</span>
+                          <RadioGroupItem value={sweetener} />
+                          <span>{sweetener}</span>
                         </label>
                       ))}
                     </RadioGroup>
