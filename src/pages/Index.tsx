@@ -368,7 +368,7 @@ const Index = () => {
             <DialogTitle className="text-3xl font-bold">
               {currentDrink ? `${currentDrink}` : "Order drink"}
             </DialogTitle>
-            {!isHotChocolate && orderStep !== "animation" && (
+            {!isHotChocolate && orderStep !== "animation" && orderStep !== "name" && orderStep !== "success" && (
               <DialogDescription>
                 Choose your preferences for this drink.
               </DialogDescription>
