@@ -3,25 +3,35 @@ import { Card } from "@/components/ui/card";
 interface MenuCardProps {
   title: string;
   options?: string[];
+  comingSoon?: boolean;
 }
 
-export const MenuCard = ({ title, options }: MenuCardProps) => {
+export const MenuCard = ({ title, options, comingSoon }: MenuCardProps) => {
   return (
-    <Card className="p-6 bg-card shadow-elevated transition-all duration-300 border-2 border-border hover:border-primary rounded-sm">
-      <div className="flex-1">
-        <h3 className="text-xl md:text-2xl font-semibold mb-2 text-foreground tracking-wide">{title}</h3>
-          {options && options.length > 0 && (
-            <div className="flex flex-wrap gap-2">
-              {options.map((option, idx) => (
-                <span
-                  key={idx}
-                  className="text-xs px-3 py-1 bg-secondary text-secondary-foreground rounded-sm font-medium uppercase tracking-wider border border-secondary-foreground/20"
-                >
-                  {option}
-                </span>
-              ))}
-            </div>
+    <Card className="p-6 bg-card transition-all duration-300 border-2 border-border hover:border-primary rounded-sm">
+      <div className="flex-1 space-y-3">
+        <div className="flex items-center justify-between gap-3">
+          <h3 className="text-xl md:text-2xl font-semibold text-foreground tracking-wide">
+            {title}
+          </h3>
+          {comingSoon && (
+            <span className="text-xs px-3 py-1 rounded-full border border-destructive/40 text-destructive font-semibold uppercase tracking-wider">
+              Coming Soon
+            </span>
           )}
+        </div>
+        {options && options.length > 0 && (
+          <div className="flex flex-wrap gap-2">
+            {options.map((option, idx) => (
+              <span
+                key={idx}
+                className="text-xs px-3 py-1 bg-secondary text-secondary-foreground rounded-full font-medium uppercase tracking-wider border border-secondary-foreground/20"
+              >
+                {option}
+              </span>
+            ))}
+          </div>
+        )}
       </div>
     </Card>
   );

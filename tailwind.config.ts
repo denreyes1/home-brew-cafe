@@ -12,6 +12,19 @@ export default {
         "2xl": "1400px",
       },
     },
+    boxShadow: {
+      none: "0 0 #0000",
+      sm: "0 0 #0000",
+      DEFAULT: "0 0 #0000",
+      md: "0 0 #0000",
+      lg: "0 0 #0000",
+      xl: "0 0 #0000",
+      "2xl": "0 0 #0000",
+      inner: "0 0 #0000",
+      soft: "0 0 #0000",
+      elevated: "0 0 #0000",
+      spray: "0 0 #0000",
+    },
     extend: {
       colors: {
         border: "hsl(var(--border))",
@@ -94,11 +107,6 @@ export default {
         "gradient-warm": "var(--gradient-warm)",
         "gradient-hero": "var(--gradient-hero)",
         "gradient-graffiti": "var(--gradient-graffiti)",
-      },
-      boxShadow: {
-        soft: "var(--shadow-soft)",
-        elevated: "var(--shadow-elevated)",
-        spray: "var(--shadow-spray)",
       },
     },
   },
