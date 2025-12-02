@@ -13,6 +13,9 @@ import { Label } from "@/components/ui/label";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Input } from "@/components/ui/input";
 import logo from "@/assets/logo.png";
+import { db } from "@/lib/firebase";
+import { addDoc, collection, serverTimestamp } from "firebase/firestore";
+import { Link } from "react-router-dom";
 
 type Drink = {
   title: string;
@@ -128,24 +131,24 @@ const Index = () => {
           ? `Name: ${customerName}`
           : "Name: (not provided)";
 
-        const lines = [
-          "==================",
-          "",
-          `Drink: ${drinkName}`,
-          temperatureLine,
-          milkLine,
-          sweetenerLine,
-          nameLine,
-        ].filter(Boolean) as string[];
-
-        const message = encodeURIComponent(lines.join("\n"));
-        const whatsappUrl = `https://wa.me/14372603540?text=${message}`;
-
-        if (typeof window !== "undefined") {
-          window.open(whatsappUrl, "_blank");
-        }
-
-        setOrderStep("success");
+        void (async () => {
+          try {
+            await addDoc(collection(db, "orders"), {
+              drink: drinkName,
+              temperature: selectedTemperature ?? null,
+              milk: milkLine ? selectedMilk : null,
+              sweetener: sweetenerLine ? selectedSweetener : null,
+              name: customerName || null,
+              createdAt: serverTimestamp(),
+              status: "pending",
+            });
+          } catch (error) {
+            // For now, just log the error; you could surface a toast if desired
+            console.error("Failed to save order to Firestore:", error);
+          } finally {
+            setOrderStep("success");
+          }
+        })();
       }, 3500);
       return () => clearTimeout(timeout);
     }
@@ -589,9 +592,17 @@ const Index = () => {
         <div className="container mx-auto px-4">
           <div className="flex flex-col items-center justify-between gap-4 text-xs text-muted-foreground/80 md:flex-row">
             <p>© 2024 D&A Home Café. Crafted with love and caffeine.</p>
-            <p className="uppercase tracking-[0.2em]">
-              Small-batch &middot; At home &middot; With care
-            </p>
+            <div className="flex flex-col items-center gap-2 text-center md:flex-row md:gap-4">
+              <p className="uppercase tracking-[0.2em]">
+                Small-batch &middot; At home &middot; With care
+              </p>
+              <Link
+                to="/orders"
+                className="text-[0.7rem] uppercase tracking-[0.2em] text-foreground/70 underline-offset-4 hover:text-foreground hover:underline"
+              >
+                View orders
+              </Link>
+            </div>
           </div>
         </div>
       </footer>
