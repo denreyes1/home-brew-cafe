@@ -105,7 +105,39 @@ const Index = () => {
   };
 
   const handleSubmitOrder = () => {
-    // In a real app you'd send this somewhere; for now we just close the dialog.
+    const drinkName = currentDrink ?? "Unknown drink";
+    const temperatureLine =
+      temperatureOptions.length > 0 && selectedTemperature
+        ? `Temperature: ${selectedTemperature}`
+        : null;
+
+    const includeMilkAndSyrup = !isHotChocolate;
+    const milkLine =
+      includeMilkAndSyrup && selectedMilk ? `Milk: ${selectedMilk}` : null;
+    const syrupLine =
+      includeMilkAndSyrup && selectedSyrup ? `Syrup: ${selectedSyrup}` : null;
+
+    const nameLine = customerName
+      ? `Name: ${customerName}`
+      : "Name: (not provided)";
+
+    const lines = [
+      "New drink order from D&A Home Café:",
+      "",
+      `Drink: ${drinkName}`,
+      temperatureLine,
+      milkLine,
+      syrupLine,
+      nameLine,
+    ].filter(Boolean) as string[];
+
+    const message = encodeURIComponent(lines.join("\n"));
+    const whatsappUrl = `https://wa.me/14372603540?text=${message}`;
+
+    if (typeof window !== "undefined") {
+      window.open(whatsappUrl, "_blank");
+    }
+
     setIsOrderOpen(false);
     setOrderStep("options");
     setCustomerName("");
