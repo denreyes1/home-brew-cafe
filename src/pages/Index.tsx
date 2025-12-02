@@ -49,11 +49,11 @@ const Index = () => {
   const coffeeDrinks: Drink[] = [
     {
       title: "Latte",
-      options: ["Iced", "Hot"],
+      options: ["Hot", "Iced"],
     },
     {
       title: "Americano",
-      options: ["Iced", "Hot"],
+      options: ["Hot", "Iced"],
     },
     {
       title: "Flat White",
@@ -68,7 +68,7 @@ const Index = () => {
   const specialtyDrinks: Drink[] = [
     {
       title: "Matcha",
-      options: ["Iced", "Hot"],
+      options: ["Hot", "Iced"],
       comingSoon: true,
     },
     {
@@ -91,6 +91,7 @@ const Index = () => {
   const activeDrink = allDrinks.find((drink) => drink.title === currentDrink) ?? null;
   const temperatureOptions = activeDrink?.options ?? [];
   const isHotChocolate = currentDrink === "Colombian Hot Chocolate";
+  const isAmericano = currentDrink === "Americano";
 
   const openOrderFor = (title: string) => {
     const drink = allDrinks.find((d) => d.title === title);
@@ -121,11 +122,12 @@ const Index = () => {
           ? `Temp: ${selectedTemperature}`
           : null;
 
-        const includeMilkAndSweetener = !isHotChocolate;
+        const includeMilk = !isHotChocolate && !isAmericano;
+        const includeSweetener = !isHotChocolate;
         const milkLine =
-          includeMilkAndSweetener && selectedMilk ? `Milk: ${selectedMilk}` : null;
+          includeMilk && selectedMilk ? `Milk: ${selectedMilk}` : null;
         const sweetenerLine =
-          includeMilkAndSweetener && selectedSweetener ? `Sweet: ${selectedSweetener}` : null;
+          includeSweetener && selectedSweetener ? `Sweet: ${selectedSweetener}` : null;
 
         const nameLine = customerName
           ? `Name: ${customerName}`
@@ -152,7 +154,7 @@ const Index = () => {
       }, 3500);
       return () => clearTimeout(timeout);
     }
-  }, [orderStep, currentDrink, selectedTemperature, selectedMilk, selectedSweetener, customerName, isHotChocolate]);
+  }, [orderStep, currentDrink, selectedTemperature, selectedMilk, selectedSweetener, customerName, isHotChocolate, isAmericano]);
   return (
     <div className="min-h-screen bg-background text-foreground">
       <Snowfall />
@@ -407,28 +409,30 @@ const Index = () => {
 
               {!isHotChocolate && (
                 <>
-                  <div className="space-y-3">
-                    <Label className="text-xs uppercase tracking-[0.2em] text-muted-foreground">
-                      Milk
-                    </Label>
-                    <RadioGroup
-                      value={selectedMilk}
-                      onValueChange={setSelectedMilk}
-                      className="grid gap-2 sm:grid-cols-2"
-                    >
-                      {milks.map((milk) => (
-                        <label
-                          key={milk}
-                        className={`flex cursor-pointer items-center gap-2 rounded-full border border-border/70 bg-card/60 px-3 py-2 text-sm hover:border-primary/60 transition-all duration-200 ${
-                            selectedMilk === milk ? "opacity-100" : "opacity-50"
-                          }`}
-                        >
-                          <RadioGroupItem value={milk} />
-                          <span>{milk}</span>
-                        </label>
-                      ))}
-                    </RadioGroup>
-                  </div>
+                  {!isAmericano && (
+                    <div className="space-y-3">
+                      <Label className="text-xs uppercase tracking-[0.2em] text-muted-foreground">
+                        Milk
+                      </Label>
+                      <RadioGroup
+                        value={selectedMilk}
+                        onValueChange={setSelectedMilk}
+                        className="grid gap-2 sm:grid-cols-2"
+                      >
+                        {milks.map((milk) => (
+                          <label
+                            key={milk}
+                            className={`flex cursor-pointer items-center gap-2 rounded-full border border-border/70 bg-card/60 px-3 py-2 text-sm hover:border-primary/60 transition-all duration-200 ${
+                              selectedMilk === milk ? "opacity-100" : "opacity-50"
+                            }`}
+                          >
+                            <RadioGroupItem value={milk} />
+                            <span>{milk}</span>
+                          </label>
+                        ))}
+                      </RadioGroup>
+                    </div>
+                  )}
 
                   <div className="space-y-3">
                     <Label className="text-xs uppercase tracking-[0.2em] text-muted-foreground">
@@ -442,7 +446,7 @@ const Index = () => {
                       {sweeteners.map((sweetener) => (
                         <label
                           key={sweetener}
-                        className={`flex cursor-pointer items-center gap-2 rounded-full border border-border/70 bg-card/60 px-3 py-2 text-sm hover:border-primary/60 transition-all duration-200 ${
+                          className={`flex cursor-pointer items-center gap-2 rounded-full border border-border/70 bg-card/60 px-3 py-2 text-sm hover:border-primary/60 transition-all duration-200 ${
                             selectedSweetener === sweetener ? "opacity-100" : "opacity-50"
                           }`}
                         >
