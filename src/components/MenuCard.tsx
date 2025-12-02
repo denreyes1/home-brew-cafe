@@ -4,11 +4,21 @@ interface MenuCardProps {
   title: string;
   options?: string[];
   comingSoon?: boolean;
+  onSelect?: () => void;
 }
 
-export const MenuCard = ({ title, options, comingSoon }: MenuCardProps) => {
+export const MenuCard = ({ title, options, comingSoon, onSelect }: MenuCardProps) => {
+  const isInteractive = !!onSelect && !comingSoon;
+
   return (
-    <Card className="p-6 bg-card transition-all duration-300 border-2 border-border hover:border-primary rounded-sm">
+    <Card
+      className={`p-6 bg-card transition-all duration-300 border-2 border-border rounded-sm ${
+        isInteractive ? "cursor-pointer hover:border-primary hover:bg-card/80" : "opacity-80"
+      }`}
+      onClick={isInteractive ? onSelect : undefined}
+      role={isInteractive ? "button" : undefined}
+      tabIndex={isInteractive ? 0 : -1}
+    >
       <div className="flex-1 space-y-3">
         <div className="flex items-center justify-between gap-3">
           <h3 className="text-xl md:text-2xl font-semibold text-foreground tracking-wide">

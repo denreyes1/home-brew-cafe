@@ -1,6 +1,25 @@
+import { useState } from "react";
 import { MenuCard } from "@/components/MenuCard";
 import { Button } from "@/components/ui/button";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
+import { Label } from "@/components/ui/label";
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+import { Input } from "@/components/ui/input";
 import logo from "@/assets/logo.png";
+
+type Drink = {
+  title: string;
+  options?: string[];
+  comingSoon?: boolean;
+};
+
 const Snowfall = () => {
   const flakes = Array.from({ length: 40 });
 
@@ -24,7 +43,7 @@ const Snowfall = () => {
 };
 
 const Index = () => {
-  const coffeeDrinks = [
+  const coffeeDrinks: Drink[] = [
     {
       title: "Latte",
       options: ["Iced", "Hot"],
@@ -43,7 +62,7 @@ const Index = () => {
     },
   ];
 
-  const specialtyDrinks = [
+  const specialtyDrinks: Drink[] = [
     {
       title: "Matcha",
       options: ["Iced", "Hot"],
@@ -54,8 +73,43 @@ const Index = () => {
       options: ["Hot"],
     },
   ];
-  const syrups = ["SF Pumpkin Spice", "SF French Vanilla", "SF Vanilla"];
+  const syrups = ["None", "SF Pumpkin Spice", "SF French Vanilla", "SF Vanilla"];
   const milks = ["Lactose-free Milk", "Oat Milk", "Eggnog"];
+
+  const [isOrderOpen, setIsOrderOpen] = useState(false);
+  const [currentDrink, setCurrentDrink] = useState<string | null>(null);
+  const [selectedMilk, setSelectedMilk] = useState(milks[0] ?? "");
+  const [selectedSyrup, setSelectedSyrup] = useState(syrups[0] ?? "");
+  const [selectedTemperature, setSelectedTemperature] = useState<string | null>(null);
+  const [orderStep, setOrderStep] = useState<"options" | "name">("options");
+  const [customerName, setCustomerName] = useState("");
+
+  const allDrinks: Drink[] = [...coffeeDrinks, ...specialtyDrinks];
+  const activeDrink = allDrinks.find((drink) => drink.title === currentDrink) ?? null;
+  const temperatureOptions = activeDrink?.options ?? [];
+  const isHotChocolate = currentDrink === "Colombian Hot Chocolate";
+
+  const openOrderFor = (title: string) => {
+    const drink = allDrinks.find((d) => d.title === title);
+    setCurrentDrink(title);
+    if (drink?.options && drink.options.length > 0) {
+      setSelectedTemperature(drink.options[0]);
+    } else {
+      setSelectedTemperature(null);
+    }
+    setSelectedMilk(milks[0] ?? "");
+    setSelectedSyrup(syrups[0] ?? "");
+    setOrderStep("options");
+    setCustomerName("");
+    setIsOrderOpen(true);
+  };
+
+  const handleSubmitOrder = () => {
+    // In a real app you'd send this somewhere; for now we just close the dialog.
+    setIsOrderOpen(false);
+    setOrderStep("options");
+    setCustomerName("");
+  };
   return (
     <div className="min-h-screen bg-background text-foreground">
       <Snowfall />
@@ -76,7 +130,7 @@ const Index = () => {
                 D&A Home Café
               </p>
               <p className="text-xs text-muted-foreground/80">
-                Seasonal coffee menu
+                Menú de café de temporada
               </p>
             </div>
           </div>
@@ -94,7 +148,7 @@ const Index = () => {
             <div className="grid gap-12 lg:grid-cols-[1.3fr_minmax(0,1fr)] lg:items-end">
               <div className="space-y-8">
                 <p className="inline-flex items-center rounded-full border border-border/60 px-4 py-1 text-xs uppercase tracking-[0.2em] text-muted-foreground">
-                  House menu · Winter edition
+                  House menu
                 </p>
 
                 <div className="space-y-4">
@@ -182,7 +236,10 @@ const Index = () => {
                       style={{ animationDelay: `${idx * 0.05}s` }}
                       className="animate-fade-in"
                     >
-                      <MenuCard {...drink} />
+                      <MenuCard
+                        {...drink}
+                        onSelect={!drink.comingSoon ? () => openOrderFor(drink.title) : undefined}
+                      />
                     </div>
                   ))}
                 </div>
@@ -207,7 +264,10 @@ const Index = () => {
                       style={{ animationDelay: `${idx * 0.05}s` }}
                       className="animate-fade-in"
                     >
-                      <MenuCard {...drink} />
+                      <MenuCard
+                        {...drink}
+                        onSelect={!drink.comingSoon ? () => openOrderFor(drink.title) : undefined}
+                      />
                     </div>
                   ))}
                 </div>
@@ -252,11 +312,171 @@ const Index = () => {
         </div>
       </section>
 
+      {/* Order dialog */}
+      <Dialog
+        open={isOrderOpen}
+        onOpenChange={(open) => {
+          setIsOrderOpen(open);
+          if (!open) {
+            setOrderStep("options");
+            setCustomerName("");
+          }
+        }}
+      >
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle className="text-3xl font-bold">
+              {currentDrink ? `${currentDrink}` : "Order drink"}
+            </DialogTitle>
+            {!isHotChocolate && (
+              <DialogDescription>
+                Choose your preferences for this drink.
+              </DialogDescription>
+            )}
+          </DialogHeader>
+
+          {orderStep === "options" && (
+            <div className="space-y-6 py-2 animate-fade-in">
+              {temperatureOptions.length > 1 && (
+                <div className="space-y-3">
+                  <Label className="text-xs uppercase tracking-[0.2em] text-muted-foreground">
+                    Hot or iced
+                  </Label>
+                  <RadioGroup
+                    value={selectedTemperature ?? ""}
+                    onValueChange={setSelectedTemperature}
+                    className="flex flex-wrap gap-3"
+                  >
+                    {temperatureOptions.map((option) => (
+                      <label
+                        key={option}
+                        className={`flex cursor-pointer items-center gap-2 rounded-full border border-border/70 bg-card/60 px-3 py-2 text-sm hover:border-primary/60 transition-all duration-200 ${
+                          selectedTemperature === option ? "opacity-100" : "opacity-50"
+                        }`}
+                      >
+                        <RadioGroupItem value={option} />
+                        <span>{option}</span>
+                      </label>
+                    ))}
+                  </RadioGroup>
+                </div>
+              )}
+
+              {!isHotChocolate && (
+                <>
+                  <div className="space-y-3">
+                    <Label className="text-xs uppercase tracking-[0.2em] text-muted-foreground">
+                      Milk
+                    </Label>
+                    <RadioGroup
+                      value={selectedMilk}
+                      onValueChange={setSelectedMilk}
+                      className="grid gap-2 sm:grid-cols-2"
+                    >
+                      {milks.map((milk) => (
+                        <label
+                          key={milk}
+                        className={`flex cursor-pointer items-center gap-2 rounded-full border border-border/70 bg-card/60 px-3 py-2 text-sm hover:border-primary/60 transition-all duration-200 ${
+                            selectedMilk === milk ? "opacity-100" : "opacity-50"
+                          }`}
+                        >
+                          <RadioGroupItem value={milk} />
+                          <span>{milk}</span>
+                        </label>
+                      ))}
+                    </RadioGroup>
+                  </div>
+
+                  <div className="space-y-3">
+                    <Label className="text-xs uppercase tracking-[0.2em] text-muted-foreground">
+                      Syrup
+                    </Label>
+                    <RadioGroup
+                      value={selectedSyrup}
+                      onValueChange={setSelectedSyrup}
+                      className="grid gap-2 sm:grid-cols-2"
+                    >
+                      {syrups.map((syrup) => (
+                        <label
+                          key={syrup}
+                        className={`flex cursor-pointer items-center gap-2 rounded-full border border-border/70 bg-card/60 px-3 py-2 text-sm hover:border-primary/60 transition-all duration-200 ${
+                            selectedSyrup === syrup ? "opacity-100" : "opacity-50"
+                          }`}
+                        >
+                          <RadioGroupItem value={syrup} />
+                          <span>{syrup}</span>
+                        </label>
+                      ))}
+                    </RadioGroup>
+                  </div>
+                </>
+              )}
+            </div>
+          )}
+
+          {orderStep === "name" && (
+            <div className="space-y-4 py-2 animate-fade-in">
+              <div className="space-y-2">
+                <Label className="text-xs uppercase tracking-[0.2em] text-muted-foreground">
+                  Your name
+                </Label>
+                <Input
+                  value={customerName}
+                  onChange={(e) => setCustomerName(e.target.value)}
+                  placeholder="Who should we make this for?"
+                  className="bg-card/60"
+                />
+              </div>
+            </div>
+          )}
+
+          <DialogFooter className="mt-4">
+            {orderStep === "options" ? (
+              <>
+                <Button
+                  variant="outline"
+                  type="button"
+                  onClick={() => setIsOrderOpen(false)}
+                  className="rounded-full"
+                >
+                  Cancel
+                </Button>
+                <Button
+                  type="button"
+                  onClick={() => setOrderStep("name")}
+                  className="rounded-full"
+                >
+                  Next
+                </Button>
+              </>
+            ) : (
+              <>
+                <Button
+                  variant="outline"
+                  type="button"
+                  onClick={() => setOrderStep("options")}
+                  className="rounded-full"
+                >
+                  Back
+                </Button>
+                <Button
+                  type="button"
+                  onClick={handleSubmitOrder}
+                  className="rounded-full"
+                >
+                  Submit order
+                </Button>
+              </>
+            )}
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
       {/* Footer */}
       <footer className="border-t border-border/40 bg-card/40 py-8">
         <div className="container mx-auto px-4">
           <div className="flex flex-col items-center justify-between gap-4 text-xs text-muted-foreground/80 md:flex-row">
-            <p>© 2024 My Home Café. Crafted with love and caffeine.</p>
+            <p>© 2024 D&A Home Café. Crafted with love and caffeine.</p>
             <p className="uppercase tracking-[0.2em]">
               Small-batch &middot; At home &middot; With care
             </p>
