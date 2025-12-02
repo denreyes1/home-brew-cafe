@@ -146,6 +146,30 @@ All colors MUST be HSL.
     letter-spacing: 0.03em;
     text-transform: none;
   }
+
+  /* Elegant dark scrollbars to match the café UI */
+  * {
+    scrollbar-width: thin;
+    scrollbar-color: hsl(var(--muted-foreground)) hsl(var(--card));
+  }
+
+  *::-webkit-scrollbar {
+    width: 8px;
+  }
+
+  *::-webkit-scrollbar-track {
+    background: hsl(var(--card));
+  }
+
+  *::-webkit-scrollbar-thumb {
+    background: hsl(var(--muted-foreground));
+    border-radius: 999px;
+    border: 2px solid hsl(var(--card));
+  }
+
+  *::-webkit-scrollbar-thumb:hover {
+    background: hsl(var(--foreground));
+  }
 }
 
 @import url('https://fonts.googleapis.com/css2?family=Manrope:wght@300;400;500;600;700&family=Playfair+Display:wght@500;600;700&display=swap');

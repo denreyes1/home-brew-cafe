@@ -415,7 +415,7 @@ const Index = () => {
           }
         }}
       >
-        <DialogContent>
+        <DialogContent className="max-h-[85vh] overflow-y-auto sm:max-h-[80vh]">
           <DialogHeader>
             <DialogTitle className="text-3xl font-bold">
               {currentDrink ? `${currentDrink}` : "Order drink"}
