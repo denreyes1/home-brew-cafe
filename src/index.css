@@ -146,30 +146,6 @@ All colors MUST be HSL.
     letter-spacing: 0.03em;
     text-transform: none;
   }
-
-  /* Elegant dark scrollbars to match the café UI */
-  * {
-    scrollbar-width: thin;
-    scrollbar-color: hsl(var(--muted-foreground)) hsl(var(--card));
-  }
-
-  *::-webkit-scrollbar {
-    width: 8px;
-  }
-
-  *::-webkit-scrollbar-track {
-    background: hsl(var(--card));
-  }
-
-  *::-webkit-scrollbar-thumb {
-    background: hsl(var(--muted-foreground));
-    border-radius: 999px;
-    border: 2px solid hsl(var(--card));
-  }
-
-  *::-webkit-scrollbar-thumb:hover {
-    background: hsl(var(--foreground));
-  }
 }
 
 @import url('https://fonts.googleapis.com/css2?family=Manrope:wght@300;400;500;600;700&family=Playfair+Display:wght@500;600;700&display=swap');
@@ -413,4 +389,153 @@ All colors MUST be HSL.
   border-bottom: 2px solid hsl(var(--foreground));
   border-left: 2px solid transparent;
   border-right: 2px solid transparent;
+}
+
+/* QR page – festive ambient animations */
+@keyframes qr-orb-float {
+  0% {
+    transform: translate3d(0, 0, 0) scale(1);
+  }
+  50% {
+    transform: translate3d(0, -10px, 0) scale(1.02);
+  }
+  100% {
+    transform: translate3d(0, 0, 0) scale(1);
+  }
+}
+
+@keyframes qr-ring-pulse {
+  0%,
+  100% {
+    opacity: 0.55;
+    box-shadow: 0 0 24px hsla(35, 70%, 60%, 0.4);
+  }
+  50% {
+    opacity: 0.9;
+    box-shadow: 0 0 42px hsla(355, 65%, 55%, 0.7);
+  }
+}
+
+@keyframes qr-light-twinkle {
+  0%,
+  100% {
+    opacity: 0.3;
+    transform: translateY(0);
+  }
+  50% {
+    opacity: 1;
+    transform: translateY(2px);
+  }
+}
+
+.qr-orb {
+  position: absolute;
+  border-radius: 999px;
+  filter: blur(38px);
+  opacity: 0.65;
+  mix-blend-mode: screen;
+  pointer-events: none;
+  animation: qr-orb-float 11s ease-in-out infinite alternate;
+}
+
+.qr-orb--red {
+  width: 260px;
+  height: 260px;
+  top: 18%;
+  left: 10%;
+  background: hsl(355 65% 55% / 0.7);
+}
+
+.qr-orb--green {
+  width: 320px;
+  height: 320px;
+  bottom: 6%;
+  right: 6%;
+  background: hsl(140 45% 42% / 0.7);
+  animation-delay: 2s;
+}
+
+.qr-orb--gold {
+  width: 220px;
+  height: 220px;
+  top: 28%;
+  right: 18%;
+  background: hsl(35 70% 58% / 0.75);
+  animation-delay: 3.5s;
+}
+
+.qr-glow-ring {
+  position: absolute;
+  inset: -18px;
+  border-radius: 1.75rem;
+  background:
+    radial-gradient(circle at 50% 0%, hsla(35, 75%, 65%, 0.6), transparent 55%),
+    radial-gradient(circle at 0% 100%, hsla(140, 40%, 45%, 0.45), transparent 55%),
+    radial-gradient(circle at 100% 100%, hsla(355, 65%, 55%, 0.55), transparent 55%);
+  opacity: 0.8;
+  mix-blend-mode: screen;
+  pointer-events: none;
+  animation: qr-ring-pulse 3.4s ease-in-out infinite;
+}
+
+.qr-light-garland {
+  position: relative;
+  width: min(640px, 100%);
+  height: 72px;
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  pointer-events: none;
+}
+
+.qr-light-garland::before {
+  content: "";
+  position: absolute;
+  inset-inline: 4%;
+  top: 18px;
+  height: 1.5px;
+  border-radius: 999px;
+  background: linear-gradient(
+    to right,
+    hsl(140 18% 40% / 0.5),
+    hsl(355 55% 45% / 0.9),
+    hsl(140 18% 40% / 0.5)
+  );
+  opacity: 0.9;
+}
+
+.qr-light {
+  position: relative;
+  width: 12px;
+  height: 18px;
+  border-radius: 999px;
+  transform-origin: top center;
+  animation: qr-light-twinkle 2.6s ease-in-out infinite;
+  box-shadow:
+    0 0 8px hsla(0, 0%, 100%, 0.6),
+    0 0 16px hsla(0, 0%, 100%, 0.45);
+}
+
+.qr-light::before {
+  content: "";
+  position: absolute;
+  top: -4px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 8px;
+  height: 4px;
+  border-radius: 4px 4px 0 0;
+  background: hsl(0 0% 18%);
+}
+
+.qr-light--red {
+  background: hsl(355 80% 60%);
+}
+
+.qr-light--green {
+  background: hsl(140 55% 46%);
+}
+
+.qr-light--gold {
+  background: hsl(35 85% 60%);
 }
