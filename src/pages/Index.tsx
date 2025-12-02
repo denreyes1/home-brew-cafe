@@ -115,21 +115,21 @@ const Index = () => {
       const timeout = setTimeout(() => {
         const drinkName = currentDrink ?? "Unknown drink";
         const temperatureLine = selectedTemperature
-          ? `Temperature: ${selectedTemperature}`
+          ? `Temp: ${selectedTemperature}`
           : null;
 
         const includeMilkAndSyrup = !isHotChocolate;
         const milkLine =
           includeMilkAndSyrup && selectedMilk ? `Milk: ${selectedMilk}` : null;
         const syrupLine =
-          includeMilkAndSyrup && selectedSyrup ? `Syrup: ${selectedSyrup}` : null;
+          includeMilkAndSyrup && selectedSyrup ? `Sweet: ${selectedSyrup}` : null;
 
         const nameLine = customerName
           ? `Name: ${customerName}`
           : "Name: (not provided)";
 
         const lines = [
-          "New drink order from D&A Home Café:",
+          "==================",
           "",
           `Drink: ${drinkName}`,
           temperatureLine,
