@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { MenuCard } from "@/components/MenuCard";
 import { Button } from "@/components/ui/button";
 import {
@@ -81,7 +81,7 @@ const Index = () => {
   const [selectedMilk, setSelectedMilk] = useState(milks[0] ?? "");
   const [selectedSyrup, setSelectedSyrup] = useState(syrups[0] ?? "");
   const [selectedTemperature, setSelectedTemperature] = useState<string | null>(null);
-  const [orderStep, setOrderStep] = useState<"options" | "name">("options");
+  const [orderStep, setOrderStep] = useState<"options" | "name" | "animation" | "success">("options");
   const [customerName, setCustomerName] = useState("");
 
   const allDrinks: Drink[] = [...coffeeDrinks, ...specialtyDrinks];
@@ -99,49 +99,57 @@ const Index = () => {
     }
     setSelectedMilk(milks[0] ?? "");
     setSelectedSyrup(syrups[0] ?? "");
-    setOrderStep("options");
+    // If there are no customizable options (like Colombian Hot Chocolate),
+    // jump straight to the name step.
+    if (title === "Colombian Hot Chocolate") {
+      setOrderStep("name");
+    } else {
+      setOrderStep("options");
+    }
     setCustomerName("");
     setIsOrderOpen(true);
   };
 
-  const handleSubmitOrder = () => {
-    const drinkName = currentDrink ?? "Unknown drink";
-    const temperatureLine =
-      temperatureOptions.length > 0 && selectedTemperature
-        ? `Temperature: ${selectedTemperature}`
-        : null;
+  useEffect(() => {
+    if (orderStep === "animation") {
+      const timeout = setTimeout(() => {
+        const drinkName = currentDrink ?? "Unknown drink";
+        const temperatureLine = selectedTemperature
+          ? `Temperature: ${selectedTemperature}`
+          : null;
 
-    const includeMilkAndSyrup = !isHotChocolate;
-    const milkLine =
-      includeMilkAndSyrup && selectedMilk ? `Milk: ${selectedMilk}` : null;
-    const syrupLine =
-      includeMilkAndSyrup && selectedSyrup ? `Syrup: ${selectedSyrup}` : null;
+        const includeMilkAndSyrup = !isHotChocolate;
+        const milkLine =
+          includeMilkAndSyrup && selectedMilk ? `Milk: ${selectedMilk}` : null;
+        const syrupLine =
+          includeMilkAndSyrup && selectedSyrup ? `Syrup: ${selectedSyrup}` : null;
 
-    const nameLine = customerName
-      ? `Name: ${customerName}`
-      : "Name: (not provided)";
+        const nameLine = customerName
+          ? `Name: ${customerName}`
+          : "Name: (not provided)";
 
-    const lines = [
-      "New drink order from D&A Home Café:",
-      "",
-      `Drink: ${drinkName}`,
-      temperatureLine,
-      milkLine,
-      syrupLine,
-      nameLine,
-    ].filter(Boolean) as string[];
+        const lines = [
+          "New drink order from D&A Home Café:",
+          "",
+          `Drink: ${drinkName}`,
+          temperatureLine,
+          milkLine,
+          syrupLine,
+          nameLine,
+        ].filter(Boolean) as string[];
 
-    const message = encodeURIComponent(lines.join("\n"));
-    const whatsappUrl = `https://wa.me/14372603540?text=${message}`;
+        const message = encodeURIComponent(lines.join("\n"));
+        const whatsappUrl = `https://wa.me/14372603540?text=${message}`;
 
-    if (typeof window !== "undefined") {
-      window.open(whatsappUrl, "_blank");
+        if (typeof window !== "undefined") {
+          window.open(whatsappUrl, "_blank");
+        }
+
+        setOrderStep("success");
+      }, 3500);
+      return () => clearTimeout(timeout);
     }
-
-    setIsOrderOpen(false);
-    setOrderStep("options");
-    setCustomerName("");
-  };
+  }, [orderStep, currentDrink, selectedTemperature, selectedMilk, selectedSyrup, customerName, isHotChocolate]);
   return (
     <div className="min-h-screen bg-background text-foreground">
       <Snowfall />
@@ -360,7 +368,7 @@ const Index = () => {
             <DialogTitle className="text-3xl font-bold">
               {currentDrink ? `${currentDrink}` : "Order drink"}
             </DialogTitle>
-            {!isHotChocolate && (
+            {!isHotChocolate && orderStep !== "animation" && (
               <DialogDescription>
                 Choose your preferences for this drink.
               </DialogDescription>
@@ -462,8 +470,51 @@ const Index = () => {
             </div>
           )}
 
+          {orderStep === "animation" && (
+            <div className="py-4 animate-fade-in">
+              <div className="latte-loader">
+                <div className="latte-cup-wrapper">
+                  <div className="latte-steam">
+                    <span />
+                    <span />
+                    <span />
+                  </div>
+                  <div className="latte-stream" />
+                  <div className="latte-cup">
+                    <div className="latte-liquid" />
+                  </div>
+                  <div className="latte-handle" />
+                </div>
+                <p className="text-xs uppercase tracking-[0.2em] text-muted-foreground">
+                  Getting your order ready...
+                </p>
+              </div>
+            </div>
+          )}
+
+          {orderStep === "success" && (
+            <div className="py-4 animate-fade-in">
+              <div className="latte-loader">
+                <div className="wink-avatar">
+                  <div className="wink-face">
+                    <div className="wink-eye wink-eye--left" />
+                    <div className="wink-eye wink-eye--right" />
+                    <div className="wink-smile" />
+                    <div className="wink-cheek wink-cheek--left" />
+                    <div className="wink-cheek wink-cheek--right" />
+                  </div>
+                </div>
+                <p className="text-xs uppercase tracking-[0.2em] text-muted-foreground">
+                  {customerName
+                    ? `${customerName}, your drink will be ready soon!`
+                    : "Your drink will be ready soon!"}
+                </p>
+              </div>
+            </div>
+          )}
+
           <DialogFooter className="mt-4">
-            {orderStep === "options" ? (
+            {orderStep === "options" && (
               <>
                 <Button
                   variant="outline"
@@ -481,24 +532,53 @@ const Index = () => {
                   Next
                 </Button>
               </>
-            ) : (
+            )}
+
+            {orderStep === "name" && (
               <>
                 <Button
                   variant="outline"
                   type="button"
-                  onClick={() => setOrderStep("options")}
+                  onClick={() => (isHotChocolate ? setIsOrderOpen(false) : setOrderStep("options"))}
                   className="rounded-full"
                 >
-                  Back
+                  {isHotChocolate ? "Cancel" : "Back"}
                 </Button>
                 <Button
                   type="button"
-                  onClick={handleSubmitOrder}
+                  onClick={() => setOrderStep("animation")}
                   className="rounded-full"
+                  disabled={!customerName.trim()}
                 >
                   Submit order
                 </Button>
               </>
+            )}
+
+            {orderStep === "animation" && (
+              <Button
+                variant="outline"
+                type="button"
+                disabled
+                className="rounded-full opacity-60"
+              >
+                Preparing...
+              </Button>
+            )}
+
+            {orderStep === "success" && (
+              <Button
+                variant="outline"
+                type="button"
+                className="rounded-full"
+                onClick={() => {
+                  setIsOrderOpen(false);
+                  setOrderStep("options");
+                  setCustomerName("");
+                }}
+              >
+                Close
+              </Button>
             )}
           </DialogFooter>
         </DialogContent>
