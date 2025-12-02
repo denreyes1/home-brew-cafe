@@ -5,7 +5,7 @@ import { componentTagger } from "lovable-tagger";
 
 // https://vitejs.dev/config/
 export default defineConfig(({ mode }) => ({
-  base: "/dna-cafe/",
+  base: "/", // was "/dna-cafe/" – must be "/" for Render
   server: {
     host: "::",
     port: 8080,

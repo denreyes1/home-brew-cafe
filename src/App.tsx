@@ -13,7 +13,7 @@ const App = () => (
     <TooltipProvider>
       <Toaster />
       <Sonner />
-      <BrowserRouter basename="/dna-cafe">
+      <BrowserRouter>  {/* removed basename="/dna-cafe" */}
         <Routes>
           <Route path="/" element={<Index />} />
           <Route path="*" element={<NotFound />} />
