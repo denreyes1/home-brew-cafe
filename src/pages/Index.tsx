@@ -1,18 +1,18 @@
 import { MenuCard } from "@/components/MenuCard";
 import { Button } from "@/components/ui/button";
-import { Coffee, Mail } from "lucide-react";
-import heroImage from "@/assets/cafe-hero.jpg";
+import { Mail } from "lucide-react";
+import logo from "@/assets/logo.png";
 
 const Index = () => {
   const coffeeDrinks = [
-    { title: "Latte", options: ["Iced", "Hot"], icon: "☕" },
-    { title: "Flat White", icon: "☕" },
-    { title: "Cappuccino", icon: "☕" },
+    { title: "Latte", options: ["Iced", "Hot"] },
+    { title: "Flat White" },
+    { title: "Cappuccino" },
   ];
 
   const specialtyDrinks = [
-    { title: "Matcha", options: ["Iced", "Hot"], icon: "🍵" },
-    { title: "Colombian Hot Chocolate", icon: "🍫" },
+    { title: "Matcha", options: ["Iced", "Hot"] },
+    { title: "Colombian Hot Chocolate" },
   ];
 
   const syrups = ["Pumpkin Spice", "French Vanilla", "Vanilla"];
@@ -21,23 +21,18 @@ const Index = () => {
   return (
     <div className="min-h-screen">
       {/* Hero Section */}
-      <section className="relative h-screen flex items-center justify-center overflow-hidden">
-        <div className="absolute inset-0 bg-gradient-hero" />
-        <div
-          className="absolute inset-0 bg-cover bg-center opacity-20"
-          style={{ backgroundImage: `url(${heroImage})` }}
-        />
+      <section className="relative h-screen flex items-center justify-center overflow-hidden bg-background">
         <div className="relative z-10 text-center px-4 max-w-4xl mx-auto animate-fade-in">
-          <Coffee className="w-16 h-16 mx-auto mb-6 text-primary" />
+          <img src={logo} alt="D&A Café" className="w-48 h-48 mx-auto mb-8" />
           <h1 className="text-6xl md:text-8xl font-bold mb-6 text-foreground tracking-wider">
-            Welcome to My Home Café
+            Welcome to D&A Café
           </h1>
           <p className="text-xl md:text-2xl text-muted-foreground mb-8 max-w-2xl mx-auto">
             Experience artisanal coffee crafted with care in a cozy, intimate setting
           </p>
           <Button
             size="lg"
-            className="bg-gradient-graffiti hover:opacity-90 text-primary-foreground shadow-spray text-lg px-8 py-6 font-bold uppercase tracking-wider"
+            className="bg-primary hover:bg-primary/90 text-primary-foreground shadow-elevated text-lg px-8 py-6 font-bold uppercase tracking-wider"
             onClick={() => document.getElementById("menu")?.scrollIntoView({ behavior: "smooth" })}
           >
             Explore Menu
@@ -82,8 +77,8 @@ const Index = () => {
           {/* Customizations */}
           <div className="grid md:grid-cols-2 gap-8">
             <div className="bg-card p-8 rounded-sm shadow-elevated border-l-4 border-primary">
-              <h3 className="text-2xl md:text-3xl font-semibold mb-4 text-foreground flex items-center gap-2 tracking-wide">
-                <span>🧪</span> Flavor Syrups
+              <h3 className="text-2xl md:text-3xl font-semibold mb-4 text-foreground tracking-wide">
+                Flavor Syrups
               </h3>
               <div className="flex flex-wrap gap-3">
                 {syrups.map((syrup, idx) => (
@@ -98,8 +93,8 @@ const Index = () => {
             </div>
 
             <div className="bg-card p-8 rounded-sm shadow-elevated border-l-4 border-secondary">
-              <h3 className="text-2xl md:text-3xl font-semibold mb-4 text-foreground flex items-center gap-2 tracking-wide">
-                <span>🥛</span> Milk Options
+              <h3 className="text-2xl md:text-3xl font-semibold mb-4 text-foreground tracking-wide">
+                Milk Options
               </h3>
               <div className="flex flex-wrap gap-3">
                 {milks.map((milk, idx) => (
@@ -127,7 +122,7 @@ const Index = () => {
           </p>
           <Button
             size="lg"
-            className="bg-gradient-graffiti hover:opacity-90 text-primary-foreground shadow-spray text-lg px-8 py-6 font-bold uppercase tracking-wider"
+            className="bg-primary hover:bg-primary/90 text-primary-foreground shadow-elevated text-lg px-8 py-6 font-bold uppercase tracking-wider"
           >
             Book Your Visit
           </Button>
