@@ -63,6 +63,10 @@ const Index = () => {
       title: "Cappuccino",
       options: ["Hot"],
     },
+    {
+      title: "Mocha",
+      options: ["Hot"],
+    },
   ];
 
   const specialtyDrinks: Drink[] = [
@@ -78,12 +82,14 @@ const Index = () => {
   ];
   const sweeteners = ["None", "Sugar", "SF Pumpkin Spice", "SF French Vanilla", "SF Vanilla"];
   const milks = ["Lactose-free Milk", "Oat Milk", "Eggnog"];
+  const shotOptions = ["2 shots", "1 shot"];
 
   const [isOrderOpen, setIsOrderOpen] = useState(false);
   const [currentDrink, setCurrentDrink] = useState<string | null>(null);
   const [selectedMilk, setSelectedMilk] = useState(milks[0] ?? "");
   const [selectedSweetener, setSelectedSweetener] = useState(sweeteners[0] ?? "");
   const [selectedTemperature, setSelectedTemperature] = useState<string | null>(null);
+  const [selectedShots, setSelectedShots] = useState(shotOptions[0] ?? "2 shots");
   const [orderStep, setOrderStep] = useState<"options" | "name" | "animation" | "success">("options");
   const [customerName, setCustomerName] = useState("");
 
@@ -92,6 +98,7 @@ const Index = () => {
   const temperatureOptions = activeDrink?.options ?? [];
   const isHotChocolate = currentDrink === "Colombian Hot Chocolate";
   const isAmericano = currentDrink === "Americano";
+  const isCoffeeDrink = coffeeDrinks.some((drink) => drink.title === currentDrink);
 
   const openOrderFor = (title: string) => {
     const drink = allDrinks.find((d) => d.title === title);
@@ -101,6 +108,7 @@ const Index = () => {
     } else {
       setSelectedTemperature(null);
     }
+    setSelectedShots(shotOptions[0] ?? "2 shots");
     setSelectedMilk(milks[0] ?? "");
     setSelectedSweetener(sweeteners[0] ?? "");
     // If there are no customizable options (like Colombian Hot Chocolate),
@@ -138,6 +146,7 @@ const Index = () => {
             await addDoc(collection(db, "orders"), {
               drink: drinkName,
               temperature: selectedTemperature ?? null,
+              shots: isCoffeeDrink ? selectedShots : null,
               milk: milkLine ? selectedMilk : null,
               sweetener: sweetenerLine ? selectedSweetener : null,
               name: customerName || null,
@@ -154,7 +163,7 @@ const Index = () => {
       }, 3500);
       return () => clearTimeout(timeout);
     }
-  }, [orderStep, currentDrink, selectedTemperature, selectedMilk, selectedSweetener, customerName, isHotChocolate, isAmericano]);
+  }, [orderStep, currentDrink, selectedTemperature, selectedMilk, selectedSweetener, selectedShots, customerName, isHotChocolate, isAmericano, isCoffeeDrink]);
   return (
     <div className="min-h-screen bg-background text-foreground">
       <Snowfall />
@@ -407,6 +416,34 @@ const Index = () => {
                 </div>
               )}
 
+              {isCoffeeDrink && (
+                <div className="space-y-3">
+                  <Label className="text-xs uppercase tracking-[0.2em] text-muted-foreground">
+                    Espresso shots
+                  </Label>
+                  <RadioGroup
+                    value={selectedShots}
+                    onValueChange={setSelectedShots}
+                    className="flex flex-wrap gap-3"
+                  >
+                    {shotOptions.map((shots) => (
+                      <label
+                        key={shots}
+                        className={`flex cursor-pointer items-center gap-2 rounded-full border border-border/70 bg-card/60 px-3 py-2 text-sm hover:border-primary/60 transition-all duration-200 ${
+                          selectedShots === shots ? "opacity-100" : "opacity-50"
+                        }`}
+                      >
+                        <RadioGroupItem value={shots} />
+                        <span>{shots}</span>
+                      </label>
+                    ))}
+                  </RadioGroup>
+                  <p className="text-[0.7rem] text-muted-foreground">
+                    Our drinks regularly come with 2 shots; choose 1 shot if you prefer a milder coffee.
+                  </p>
+                </div>
+              )}
+
               {!isHotChocolate && (
                 <>
                   {!isAmericano && (
@@ -595,7 +632,7 @@ const Index = () => {
       <footer className="border-t border-border/40 bg-card/40 py-8">
         <div className="container mx-auto px-4">
           <div className="flex flex-col items-center justify-between gap-4 text-xs text-muted-foreground/80 md:flex-row">
-            <p>© 2024 D&A Home Café. Crafted with love and caffeine.</p>
+            <p>© 2025 D&A Home Café. Crafted with love and caffeine.</p>
             <div className="flex flex-col items-center gap-2 text-center md:flex-row md:gap-4">
               <p className="uppercase tracking-[0.2em]">
                 Small-batch &middot; At home &middot; With care

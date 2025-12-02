@@ -39,6 +39,7 @@ const Snowfall = () => {
 type OrderDoc = {
   drink?: string;
   temperature?: string | null;
+  shots?: string | null;
   milk?: string | null;
   sweetener?: string | null;
   name?: string | null;
@@ -51,6 +52,7 @@ type Order = {
   id: string;
   drink: string;
   temperature?: string | null;
+  shots?: string | null;
   milk?: string | null;
   sweetener?: string | null;
   name?: string | null;
@@ -75,6 +77,7 @@ const Orders = () => {
             id: doc.id,
             drink: data.drink ?? "Unknown drink",
             temperature: data.temperature ?? null,
+            shots: data.shots ?? null,
             milk: data.milk ?? null,
             sweetener: data.sweetener ?? null,
             name: data.name ?? null,
@@ -212,6 +215,14 @@ const Orders = () => {
                     </CardHeader>
                     <CardContent className="space-y-2 border-t border-border/40 pt-4 text-xs md:text-sm text-muted-foreground">
                       <div className="flex flex-wrap gap-2">
+                        {order.shots && (
+                          <Badge
+                            variant="secondary"
+                            className="rounded-full text-[0.65rem] uppercase tracking-[0.18em]"
+                          >
+                            {order.shots}
+                          </Badge>
+                        )}
                         {order.temperature && (
                           <Badge
                             variant="secondary"
