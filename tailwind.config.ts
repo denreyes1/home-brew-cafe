@@ -93,10 +93,12 @@ export default {
       backgroundImage: {
         "gradient-warm": "var(--gradient-warm)",
         "gradient-hero": "var(--gradient-hero)",
+        "gradient-graffiti": "var(--gradient-graffiti)",
       },
       boxShadow: {
         soft: "var(--shadow-soft)",
         elevated: "var(--shadow-elevated)",
+        spray: "var(--shadow-spray)",
       },
     },
   },
