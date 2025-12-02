@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { Link } from "react-router-dom";
 import { collection, doc, onSnapshot, orderBy, query, Timestamp, updateDoc } from "firebase/firestore";
 import { db } from "@/lib/firebase";
@@ -16,20 +16,20 @@ import logo from "@/assets/logo.png";
 import notifSound from "@/assets/notif.mp3";
 
 const Snowfall = () => {
-  const flakes = Array.from({ length: 40 });
+  const flakes = useMemo(
+    () =>
+      Array.from({ length: 40 }).map(() => ({
+        left: `${Math.random() * 100}%`,
+        animationDelay: `${Math.random() * -12}s`,
+        animationDuration: `${8 + Math.random() * 10}s`,
+      })),
+    [],
+  );
 
   return (
     <div className="snowfall-layer">
-      {flakes.map((_, idx) => (
-        <span
-          key={idx}
-          className="snowflake"
-          style={{
-            left: `${Math.random() * 100}%`,
-            animationDelay: `${Math.random() * -12}s`,
-            animationDuration: `${8 + Math.random() * 10}s`,
-          }}
-        >
+      {flakes.map((style, idx) => (
+        <span key={idx} className="snowflake" style={style}>
           ✦
         </span>
       ))}
@@ -68,6 +68,7 @@ const Orders = () => {
   const audioRef = useRef<HTMLAudioElement | null>(null);
   const hasInitializedRef = useRef(false);
   const previousOrderIdsRef = useRef<Set<string>>(new Set());
+  const [now, setNow] = useState<Date>(() => new Date());
 
   useEffect(() => {
     // Prepare notification sound instance once
@@ -126,6 +127,16 @@ const Orders = () => {
     );
 
     return () => unsubscribe();
+  }, []);
+
+  // Keep a moving "now" reference so that time-based styling (e.g. fresh orders)
+  // can update without needing a manual refresh.
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setNow(new Date());
+    }, 2000);
+
+    return () => clearInterval(interval);
   }, []);
 
   const handleStatusChange = async (orderId: string, nextStatus: string) => {
@@ -197,13 +208,19 @@ const Orders = () => {
                   : "Time unknown";
 
                 const isDimmed = order.status === "served" || order.status === "cancelled";
+                const isFresh =
+                  !isDimmed &&
+                  order.createdAt !== null &&
+                  now.getTime() - order.createdAt.getTime() < 10 * 1000;
 
                 return (
                   <Card
                     key={order.id}
-                    className={`flex flex-col justify-between border-border/60 bg-card/70 backdrop-blur-sm transition-opacity ${
-                      isDimmed ? "opacity-40" : "opacity-100"
-                    }`}
+                    className={`flex flex-col justify-between bg-card/70 backdrop-blur-sm border transition-all duration-500 ease-out ${
+                      isFresh
+                        ? "border-emerald-400 shadow-[0_0_18px_rgba(16,185,129,0.7)]"
+                        : "border-border/60 shadow-none"
+                    } ${isDimmed ? "opacity-40" : "opacity-100"}`}
                   >
                     <CardHeader className="space-y-3">
                       <div className="flex flex-col gap-2 md:flex-row md:items-center md:justify-between">
