@@ -683,6 +683,12 @@ const Index = () => {
               >
                 View orders
               </Link>
+              <Link
+                to="/qr"
+                className="text-[0.7rem] uppercase tracking-[0.2em] text-foreground/70 underline-offset-4 hover:text-foreground hover:underline"
+              >
+                QR
+              </Link>
             </div>
           </div>
         </div>

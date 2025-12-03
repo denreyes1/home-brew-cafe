@@ -91,13 +91,13 @@ const Qr = () => {
 
             <div className="space-y-4 text-center">
               <p className="text-[0.7rem] uppercase tracking-[0.26em] text-muted-foreground">
-                Holiday menu · scan to begin
+                Scan to begin
               </p>
               <h1 className="text-2xl md:text-3xl">
-                Open our{" "}
-                <span className="bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">
-                  cozy Christmas menu
-                </span>
+                Welcome to
+                <h1 className="bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">
+                Gingerbread House Night
+                </h1>
               </h1>
               <p className="mx-auto max-w-sm text-xs md:text-sm text-muted-foreground">
                 Point your camera at the code below to step into our little gingerbread house
