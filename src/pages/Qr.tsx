@@ -96,12 +96,12 @@ const Qr = () => {
               <h1 className="text-2xl md:text-3xl">
                 Welcome to
                 <h1 className="bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">
-                Gingerbread House Night
+                D&A Café
                 </h1>
               </h1>
               <p className="mx-auto max-w-sm text-xs md:text-sm text-muted-foreground">
-                Point your camera at the code below to step into our little gingerbread house
-                of drinks. No apps, just holiday magic.
+                Point your camera at the code below to step into our home
+                of drinks.
               </p>
             </div>
 

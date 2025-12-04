@@ -16,37 +16,15 @@ import logo from "@/assets/logo.png";
 import { db } from "@/lib/firebase";
 import { addDoc, collection, serverTimestamp } from "firebase/firestore";
 import { Link } from "react-router-dom";
+import {
+  subscribeToMenuItems,
+  subscribeToMenuConfig,
+  type MenuCategory,
+  type MenuItem,
+  type MenuConfig,
+} from "@/lib/menu";
 
-type Drink = {
-  title: string;
-  options?: string[];
-  comingSoon?: boolean;
-};
-
-const getDrinkDescription = (drink: string | null): string => {
-  switch (drink) {
-    case "Latte":
-      return "Smooth espresso with steamed milk, balanced and creamy.";
-    case "Americano":
-      return "Rich espresso topped with hot water for a smooth, long coffee.";
-    case "Flat White":
-      return "Silky microfoam over a bold double shot of espresso.";
-    case "Cappuccino":
-      return "A classic balance of espresso, silky milk, and airy foam. Topped with a dusting of cinnamon.";
-    case "Mocha":
-      return "Traditional Colombian-style hot chocolate with a dose of espresso, rich and comforting.";
-    case "Matcha":
-      return "Ceremonial-grade matcha, gently whisked for a bright, earthy cup.";
-    case "Hot Chocolate":
-      return "Traditional Colombian-style hot chocolate, rich and comforting.";
-    case "London Fog":
-      return "Earl Grey tea with steamed milk and vanilla notes.";
-    case "Honey Citrus Peach Tea":
-      return "A soothing blend of peach, lemon, and ginger—warm, bright, and comforting.";
-    default:
-      return "";
-  }
-};
+type Drink = MenuItem;
 
 const Snowfall = () => {
   const flakes = Array.from({ length: 40 });
@@ -71,50 +49,13 @@ const Snowfall = () => {
 };
 
 const Index = () => {
-  const coffeeDrinks: Drink[] = [
-    {
-      title: "Latte",
-      options: ["Hot", "Iced"],
-    },
-    {
-      title: "Americano",
-      options: ["Hot", "Iced"],
-    },
-    {
-      title: "Flat White",
-      options: ["Hot"],
-    },
-    {
-      title: "Cappuccino",
-      options: ["Hot"],
-    },
-    {
-      title: "Mocha",
-      options: ["Hot"],
-    },
-  ];
-
-  const specialtyDrinks: Drink[] = [
-    {
-      title: "Matcha",
-      options: ["Hot", "Iced"],
-      comingSoon: true,
-    },
-    {
-      title: "Hot Chocolate",
-      options: ["Hot"],
-    },
-    {
-      title: "London Fog",
-      options: ["Hot"],
-    },
-    {
-      title: "Honey Citrus Peach Tea",
-      options: ["Hot", "Iced"],
-    },
-  ];
-  const sweeteners = ["None", "Sugar", "SF Pumpkin Spice", "SF French Vanilla", "SF Vanilla"];
-  const milks = ["Lactose-free Milk", "Oat Milk", "Eggnog"];
+  const [menuItems, setMenuItems] = useState<Drink[]>([]);
+  const [menuConfig, setMenuConfig] = useState<MenuConfig>({
+    sweeteners: [],
+    milks: [],
+  });
+  const sweeteners = menuConfig.sweeteners;
+  const milks = menuConfig.milks;
   const shotOptions = ["2 shots", "1 shot"];
 
   const [isOrderOpen, setIsOrderOpen] = useState(false);
@@ -126,15 +67,90 @@ const Index = () => {
   const [orderStep, setOrderStep] = useState<"options" | "name" | "animation" | "success">("options");
   const [customerName, setCustomerName] = useState("");
 
-  const allDrinks: Drink[] = [...coffeeDrinks, ...specialtyDrinks];
+  const visibleMenuItems = menuItems.filter((item) => item.isActive ?? true);
+  const byCategory = (category: MenuCategory) =>
+    visibleMenuItems.filter((item) => item.category === category);
+
+  const coffeeDrinks = byCategory("coffee");
+  const specialtyDrinks = byCategory("signature");
+
+  const allDrinks: Drink[] = visibleMenuItems;
   const activeDrink = allDrinks.find((drink) => drink.title === currentDrink) ?? null;
   const temperatureOptions = activeDrink?.options ?? [];
-  const isHotChocolate = currentDrink === "Hot Chocolate";
-  const isAmericano = currentDrink === "Americano";
-  const isCoffeeDrink = coffeeDrinks.some((drink) => drink.title === currentDrink);
-  const isLondonFog = currentDrink === "London Fog";
-  const isCitrusPeachTea = currentDrink === "Honey Citrus Peach Tea";
-  const drinkDescription = getDrinkDescription(currentDrink);
+  const isCoffeeDrink = activeDrink?.category === "coffee";
+  const includeMilk = activeDrink?.allowMilk ?? false;
+  const includeSweetener = activeDrink?.allowSweetener ?? false;
+  const drinkDescription = activeDrink?.description ?? "";
+
+  const heroPrimary =
+    visibleMenuItems.find((item) => item.id === menuConfig.heroHighlightPrimaryId) ?? null;
+  const heroSecondary =
+    visibleMenuItems.find((item) => item.id === menuConfig.heroHighlightSecondaryId) ?? null;
+
+  const heroTitle =
+    menuConfig.heroTitle?.trim() || "Bienvenido a nuestra casita!";
+  const heroBody =
+    menuConfig.heroBody?.trim() ||
+    "Welcome to our home! We’re genuinely happy to share this experience with you. Please relax, make yourself comfortable, and enjoy a curated selection of our favorite drinks.";
+  const menuTitle =
+    menuConfig.menuTitle?.trim() || "Thoughtful drinks, small but considered.";
+  const menuBody =
+    menuConfig.menuBody?.trim() ||
+    "Our beans are responsibly sourced from Colombia and roasted to a balanced medium roast for a smooth, rich cup.";
+
+  const buildSummaryLines = () => {
+    if (!currentDrink) return [] as string[];
+    const lines: string[] = [];
+
+    let main = currentDrink;
+    if (selectedTemperature) {
+      main += ` • ${selectedTemperature}`;
+    }
+    if (isCoffeeDrink && selectedShots) {
+      main += ` • ${selectedShots}`;
+    }
+    lines.push(main);
+
+    if (includeMilk && selectedMilk) {
+      lines.push(`Milk: ${selectedMilk}`);
+    }
+    if (includeSweetener && selectedSweetener && selectedSweetener !== "None") {
+      lines.push(`Sweetener: ${selectedSweetener}`);
+    }
+
+    return lines;
+  };
+
+  useEffect(() => {
+    const unsubscribe = subscribeToMenuItems(
+      (items) => {
+        setMenuItems(items);
+      },
+      (error) => {
+        console.error("Failed to subscribe to menu items:", error);
+        setMenuItems([]);
+      },
+    );
+
+    return () => unsubscribe();
+  }, []);
+
+  useEffect(() => {
+    const unsubscribe = subscribeToMenuConfig(
+      (config) => {
+        setMenuConfig(config);
+      },
+      (error) => {
+        console.error("Failed to subscribe to menu config:", error);
+        setMenuConfig({
+          sweeteners: [],
+          milks: [],
+        });
+      },
+    );
+
+    return () => unsubscribe();
+  }, []);
 
   const openOrderFor = (title: string) => {
     const drink = allDrinks.find((d) => d.title === title);
@@ -147,13 +163,7 @@ const Index = () => {
     setSelectedShots(shotOptions[0] ?? "2 shots");
     setSelectedMilk(milks[0] ?? "");
     setSelectedSweetener(sweeteners[0] ?? "");
-    // If there are no customizable options (like Hot Chocolate),
-    // jump straight to the name step.
-    if (title === "Hot Chocolate") {
-      setOrderStep("name");
-    } else {
-      setOrderStep("options");
-    }
+    setOrderStep("options");
     setCustomerName("");
     setIsOrderOpen(true);
   };
@@ -162,20 +172,33 @@ const Index = () => {
     if (orderStep === "animation") {
       const timeout = setTimeout(() => {
         const drinkName = currentDrink ?? "Unknown drink";
-        const temperatureLine = selectedTemperature
-          ? `Temp: ${selectedTemperature}`
-          : null;
-
-        const includeMilk = !isHotChocolate && !isAmericano && !isCitrusPeachTea;
-        const includeSweetener = !isHotChocolate && !isLondonFog && !isCitrusPeachTea;
         const milkLine =
           includeMilk && selectedMilk ? `Milk: ${selectedMilk}` : null;
         const sweetenerLine =
           includeSweetener && selectedSweetener ? `Sweet: ${selectedSweetener}` : null;
 
-        const nameLine = customerName
-          ? `Name: ${customerName}`
-          : "Name: (not provided)";
+        const summaryLines = (() => {
+          if (!currentDrink) return [] as string[];
+          const lines: string[] = [];
+
+          let main = drinkName;
+          if (selectedTemperature) {
+            main += ` • ${selectedTemperature}`;
+          }
+          if (isCoffeeDrink && selectedShots) {
+            main += ` • ${selectedShots}`;
+          }
+          lines.push(main);
+
+          if (milkLine) {
+            lines.push(milkLine);
+          }
+          if (sweetenerLine) {
+            lines.push(sweetenerLine);
+          }
+
+          return lines;
+        })();
 
         void (async () => {
           try {
@@ -186,6 +209,7 @@ const Index = () => {
               milk: milkLine ? selectedMilk : null,
               sweetener: sweetenerLine ? selectedSweetener : null,
               name: customerName || null,
+              summaryLines,
               createdAt: serverTimestamp(),
               status: "pending",
             });
@@ -199,7 +223,18 @@ const Index = () => {
       }, 3500);
       return () => clearTimeout(timeout);
     }
-  }, [orderStep, currentDrink, selectedTemperature, selectedMilk, selectedSweetener, selectedShots, customerName, isHotChocolate, isAmericano, isCoffeeDrink, isLondonFog, isCitrusPeachTea]);
+  }, [
+    orderStep,
+    currentDrink,
+    selectedTemperature,
+    selectedMilk,
+    selectedSweetener,
+    selectedShots,
+    customerName,
+    isCoffeeDrink,
+    includeMilk,
+    includeSweetener,
+  ]);
   return (
     <div className="min-h-screen bg-background text-foreground">
       <Snowfall />
@@ -243,10 +278,10 @@ const Index = () => {
 
                 <div className="space-y-4">
                   <h1 className="text-4xl leading-tight sm:text-5xl md:text-6xl lg:text-7xl">
-                    Bienvenido a nuestra casita!
+                    {heroTitle}
                   </h1>
                   <p className="max-w-xl text-base md:text-lg text-muted-foreground">
-                  Welcome to our home! We’re genuinely happy to share this gingerbread house night with you. Please relax, make yourself comfortable, and enjoy a curated selection of our favorite drinks.
+                    {heroBody}
                   </p>
                 </div>
 
@@ -273,18 +308,22 @@ const Index = () => {
                   </span>
                 </div>
                 <div className="space-y-4 text-sm text-muted-foreground">
-                  <div className="flex items-center justify-between gap-4">
-                    <span>Eggnog Latte</span>
-                    <span className="text-xs uppercase tracking-[0.2em] text-foreground/60">
-                      Coffee Classics
-                    </span>
-                  </div>
-                  <div className="flex items-center justify-between gap-4">
-                    <span>Hot Chocolate</span>
-                    <span className="text-xs uppercase tracking-[0.2em] text-foreground/60">
-                      Signature Sips
-                    </span>
-                  </div>
+                  {heroPrimary && (
+                    <div className="flex items-center justify-between gap-4">
+                      <span>{heroPrimary.title}</span>
+                      <span className="text-xs uppercase tracking-[0.2em] text-foreground/60">
+                        {heroPrimary.category === "coffee" ? "Coffee Classics" : "Signature Sips"}
+                      </span>
+                    </div>
+                  )}
+                  {heroSecondary && (
+                    <div className="flex items-center justify-between gap-4">
+                      <span>{heroSecondary.title}</span>
+                      <span className="text-xs uppercase tracking-[0.2em] text-foreground/60">
+                        {heroSecondary.category === "coffee" ? "Coffee Classics" : "Signature Sips"}
+                      </span>
+                    </div>
+                  )}
                   <div className="pt-2 text-xs text-muted-foreground/80">
                     Sweeteners, alternative milks, and iced options available.
                   </div>
@@ -304,11 +343,11 @@ const Index = () => {
                 The menu
               </p>
               <h2 className="mt-3 text-3xl md:text-4xl lg:text-5xl">
-                Thoughtful drinks, small but considered.
+                {menuTitle}
               </h2>
             </div>
             <p className="max-w-md text-sm md:text-base text-muted-foreground">
-              Our beans are responsibly sourced from Colombia and roasted to a balanced medium roast for a smooth, rich cup.
+              {menuBody}
             </p>
           </div>
 
@@ -328,7 +367,7 @@ const Index = () => {
                     >
                       <MenuCard
                         {...drink}
-                        description={getDrinkDescription(drink.title)}
+                        description={drink.description}
                         onSelect={!drink.comingSoon ? () => openOrderFor(drink.title) : undefined}
                       />
                     </div>
@@ -357,7 +396,7 @@ const Index = () => {
                     >
                       <MenuCard
                         {...drink}
-                        description={getDrinkDescription(drink.title)}
+                        description={drink.description}
                         onSelect={!drink.comingSoon ? () => openOrderFor(drink.title) : undefined}
                       />
                     </div>
@@ -482,64 +521,93 @@ const Index = () => {
                 </div>
               )}
 
-              {!isHotChocolate && (
-                <>
-                  {!isAmericano && !isCitrusPeachTea && (
-                    <div className="space-y-3">
-                      <Label className="text-xs uppercase tracking-[0.2em] text-muted-foreground">
-                        Milk
-                      </Label>
-                      <RadioGroup
-                        value={selectedMilk}
-                        onValueChange={setSelectedMilk}
-                        className="grid gap-2 sm:grid-cols-2"
+              {includeMilk && (
+                <div className="space-y-3">
+                  <Label className="text-xs uppercase tracking-[0.2em] text-muted-foreground">
+                    Milk
+                  </Label>
+                  <RadioGroup
+                    value={selectedMilk}
+                    onValueChange={setSelectedMilk}
+                    className="grid gap-2 sm:grid-cols-2"
+                  >
+                    {milks.map((milk) => (
+                      <label
+                        key={milk}
+                        className={`flex cursor-pointer items-center gap-2 rounded-full border border-border/70 bg-card/60 px-3 py-2 text-sm hover:border-primary/60 transition-all duration-200 ${
+                          selectedMilk === milk ? "opacity-100" : "opacity-50"
+                        }`}
                       >
-                        {milks.map((milk) => (
-                          <label
-                            key={milk}
-                            className={`flex cursor-pointer items-center gap-2 rounded-full border border-border/70 bg-card/60 px-3 py-2 text-sm hover:border-primary/60 transition-all duration-200 ${
-                              selectedMilk === milk ? "opacity-100" : "opacity-50"
-                            }`}
-                          >
-                            <RadioGroupItem value={milk} />
-                            <span>{milk}</span>
-                          </label>
-                        ))}
-                      </RadioGroup>
-                    </div>
-                  )}
+                        <RadioGroupItem value={milk} />
+                        <span>{milk}</span>
+                      </label>
+                    ))}
+                  </RadioGroup>
+                </div>
+              )}
 
-                  {!isLondonFog && !isCitrusPeachTea && (
-                    <div className="space-y-3">
-                      <Label className="text-xs uppercase tracking-[0.2em] text-muted-foreground">
-                        Sweetener
-                      </Label>
-                      <RadioGroup
-                        value={selectedSweetener}
-                        onValueChange={setSelectedSweetener}
-                        className="grid gap-2 sm:grid-cols-2"
+              {includeSweetener && (
+                <div className="space-y-3">
+                  <Label className="text-xs uppercase tracking-[0.2em] text-muted-foreground">
+                    Sweetener
+                  </Label>
+                  <RadioGroup
+                    value={selectedSweetener}
+                    onValueChange={setSelectedSweetener}
+                    className="grid gap-2 sm:grid-cols-2"
+                  >
+                    {sweeteners.map((sweetener) => (
+                      <label
+                        key={sweetener}
+                        className={`flex cursor-pointer items-center gap-2 rounded-full border border-border/70 bg-card/60 px-3 py-2 text-sm hover:border-primary/60 transition-all duration-200 ${
+                          selectedSweetener === sweetener ? "opacity-100" : "opacity-50"
+                        }`}
                       >
-                        {sweeteners.map((sweetener) => (
-                          <label
-                            key={sweetener}
-                            className={`flex cursor-pointer items-center gap-2 rounded-full border border-border/70 bg-card/60 px-3 py-2 text-sm hover:border-primary/60 transition-all duration-200 ${
-                              selectedSweetener === sweetener ? "opacity-100" : "opacity-50"
-                            }`}
-                          >
-                            <RadioGroupItem value={sweetener} />
-                            <span>{sweetener}</span>
-                          </label>
-                        ))}
-                      </RadioGroup>
-                    </div>
-                  )}
-                </>
+                        <RadioGroupItem value={sweetener} />
+                        <span>{sweetener}</span>
+                      </label>
+                    ))}
+                  </RadioGroup>
+                </div>
               )}
             </div>
           )}
 
           {orderStep === "name" && (
-            <div className="space-y-4 py-2 animate-fade-in">
+            <div className="space-y-5 py-2 animate-fade-in">
+              {(() => {
+                const summaryLines = buildSummaryLines();
+                if (summaryLines.length === 0) return null;
+                const [primaryLine, ...detailLines] = summaryLines;
+
+                return (
+                  <div className="rounded-2xl border border-primary/40 bg-gradient-to-br from-primary/10 via-card/70 to-background p-4 text-xs shadow-sm">
+                    <div className="mb-2 flex items-center justify-between gap-2">
+                      <p className="text-[0.65rem] uppercase tracking-[0.18em] text-muted-foreground">
+                        Order summary
+                      </p>
+                      <span className="rounded-full border border-border/60 bg-background/80 px-2 py-0.5 text-[0.6rem] uppercase tracking-[0.16em] text-muted-foreground">
+                        Review before sending
+                      </span>
+                    </div>
+                    <div className="space-y-2 text-foreground">
+                      <p className="text-sm font-medium leading-snug">{primaryLine}</p>
+                      {detailLines.length > 0 && (
+                        <div className="flex flex-wrap gap-1.5">
+                          {detailLines.map((line, idx) => (
+                            <span
+                              key={idx}
+                              className="rounded-full border border-border/60 bg-background/80 px-2 py-0.5 text-[0.65rem] uppercase tracking-[0.16em] text-muted-foreground"
+                            >
+                              {line}
+                            </span>
+                          ))}
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                );
+              })()}
               <div className="space-y-2">
                 <Label className="text-xs uppercase tracking-[0.2em] text-muted-foreground">
                   Your name
@@ -623,10 +691,10 @@ const Index = () => {
                 <Button
                   variant="outline"
                   type="button"
-                  onClick={() => (isHotChocolate ? setIsOrderOpen(false) : setOrderStep("options"))}
+                  onClick={() => setOrderStep("options")}
                   className="rounded-full"
                 >
-                  {isHotChocolate ? "Cancel" : "Back"}
+                  Back
                 </Button>
                 <Button
                   type="button"

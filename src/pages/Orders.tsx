@@ -170,13 +170,22 @@ const Orders = () => {
               </p>
             </div>
           </div>
-          <Button
-            asChild
-            variant="outline"
-            className="rounded-full text-xs uppercase tracking-[0.18em]"
-          >
-            <Link to="/">Back to menu</Link>
-          </Button>
+          <div className="flex items-center gap-3">
+            <Button
+              asChild
+              variant="outline"
+              className="hidden rounded-full text-xs uppercase tracking-[0.18em] sm:inline-flex"
+            >
+              <Link to="/menu-admin">Admin</Link>
+            </Button>
+            <Button
+              asChild
+              variant="outline"
+              className="rounded-full text-xs uppercase tracking-[0.18em]"
+            >
+              <Link to="/">Back to menu</Link>
+            </Button>
+          </div>
         </div>
       </header>
 

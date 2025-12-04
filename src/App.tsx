@@ -7,6 +7,7 @@ import Index from "./pages/Index";
 import Orders from "./pages/Orders";
 import NotFound from "./pages/NotFound";
 import Qr from "./pages/Qr";
+import MenuAdmin from "./pages/MenuAdmin";
 
 const queryClient = new QueryClient();
 
@@ -20,6 +21,7 @@ const App = () => (
           <Route path="/" element={<Index />} />
           <Route path="/orders" element={<Orders />} />
           <Route path="/qr" element={<Qr />} />
+          <Route path="/menu-admin" element={<MenuAdmin />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
       </BrowserRouter>
