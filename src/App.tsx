@@ -3,6 +3,7 @@ import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { SiteThemeProvider } from "@/components/SiteThemeProvider";
 import Index from "./pages/Index";
 import Orders from "./pages/Orders";
 import NotFound from "./pages/NotFound";
@@ -14,17 +15,19 @@ const queryClient = new QueryClient();
 const App = () => (
   <QueryClientProvider client={queryClient}>
     <TooltipProvider>
-      <Toaster />
-      <Sonner />
-      <BrowserRouter>  {/* removed basename="/dna-cafe" */}
-        <Routes>
-          <Route path="/" element={<Index />} />
-          <Route path="/orders" element={<Orders />} />
-          <Route path="/qr" element={<Qr />} />
-          <Route path="/menu-admin" element={<MenuAdmin />} />
-          <Route path="*" element={<NotFound />} />
-        </Routes>
-      </BrowserRouter>
+      <SiteThemeProvider>
+        <Toaster />
+        <Sonner />
+        <BrowserRouter>  {/* removed basename="/dna-cafe" */}
+          <Routes>
+            <Route path="/" element={<Index />} />
+            <Route path="/orders" element={<Orders />} />
+            <Route path="/qr" element={<Qr />} />
+            <Route path="/menu-admin" element={<MenuAdmin />} />
+            <Route path="*" element={<NotFound />} />
+          </Routes>
+        </BrowserRouter>
+      </SiteThemeProvider>
     </TooltipProvider>
   </QueryClientProvider>
 );

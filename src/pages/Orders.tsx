@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Link } from "react-router-dom";
 import { collection, doc, onSnapshot, orderBy, query, Timestamp, updateDoc } from "firebase/firestore";
 import { db } from "@/lib/firebase";
@@ -14,28 +14,7 @@ import {
 } from "@/components/ui/select";
 import logo from "@/assets/logo.png";
 import notifSound from "@/assets/notif.mp3";
-
-const Snowfall = () => {
-  const flakes = useMemo(
-    () =>
-      Array.from({ length: 40 }).map(() => ({
-        left: `${Math.random() * 100}%`,
-        animationDelay: `${Math.random() * -12}s`,
-        animationDuration: `${8 + Math.random() * 10}s`,
-      })),
-    [],
-  );
-
-  return (
-    <div className="snowfall-layer">
-      {flakes.map((style, idx) => (
-        <span key={idx} className="snowflake" style={style}>
-          ✦
-        </span>
-      ))}
-    </div>
-  );
-};
+import { SeasonalEffects } from "@/components/SeasonalEffects";
 
 type OrderDoc = {
   drink?: string;
@@ -149,7 +128,7 @@ const Orders = () => {
 
   return (
     <div className="min-h-screen bg-background text-foreground">
-      <Snowfall />
+      <SeasonalEffects />
       <header className="border-b border-border/40 bg-background/95 backdrop-blur-sm">
         <div className="container mx-auto flex items-center justify-between px-4 py-5">
           <div className="flex items-center gap-4">

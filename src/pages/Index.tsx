@@ -16,6 +16,7 @@ import logo from "@/assets/logo.png";
 import { db } from "@/lib/firebase";
 import { addDoc, collection, serverTimestamp } from "firebase/firestore";
 import { Link } from "react-router-dom";
+import { SeasonalEffects } from "@/components/SeasonalEffects";
 import {
   subscribeToMenuItems,
   subscribeToMenuConfig,
@@ -25,28 +26,6 @@ import {
 } from "@/lib/menu";
 
 type Drink = MenuItem;
-
-const Snowfall = () => {
-  const flakes = Array.from({ length: 40 });
-
-  return (
-    <div className="snowfall-layer">
-      {flakes.map((_, idx) => (
-        <span
-          key={idx}
-          className="snowflake"
-          style={{
-            left: `${Math.random() * 100}%`,
-            animationDelay: `${Math.random() * -12}s`,
-            animationDuration: `${8 + Math.random() * 10}s`,
-          }}
-        >
-          ✦
-        </span>
-      ))}
-    </div>
-  );
-};
 
 const Index = () => {
   const [menuItems, setMenuItems] = useState<Drink[]>([]);
@@ -237,7 +216,7 @@ const Index = () => {
   ]);
   return (
     <div className="min-h-screen bg-background text-foreground">
-      <Snowfall />
+      <SeasonalEffects />
       {/* Brand Header */}
       <header className="border-b border-border/40 bg-background/95 backdrop-blur-sm">
         <div className="container mx-auto flex items-center justify-start px-4 py-5">

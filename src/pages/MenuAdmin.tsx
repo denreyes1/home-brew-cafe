@@ -25,8 +25,17 @@ import {
   type MenuCategory,
   type MenuItem,
   type MenuConfig,
+  type ThemeSeason,
+  type ThemeMode,
 } from "@/lib/menu";
 import { useToast } from "@/hooks/use-toast";
+
+const SEASON_OPTIONS: { value: ThemeSeason; label: string; emoji: string }[] = [
+  { value: "spring", label: "Spring", emoji: "🌸" },
+  { value: "summer", label: "Summer", emoji: "☀️" },
+  { value: "autumn", label: "Autumn", emoji: "🍂" },
+  { value: "winter", label: "Winter", emoji: "❄️" },
+];
 
 type FormState = {
   id?: string;
@@ -350,6 +359,33 @@ const MenuAdmin = () => {
     }
   };
 
+  const currentSeason: ThemeSeason = config.season ?? "winter";
+  const currentMode: ThemeMode = config.mode ?? "dark";
+
+  const handleThemeChange = async (next: { season?: ThemeSeason; mode?: ThemeMode }) => {
+    const season = next.season ?? currentSeason;
+    const mode = next.mode ?? currentMode;
+    if (season === currentSeason && mode === currentMode) return;
+
+    setConfig((prev) => ({ ...prev, season, mode }));
+    try {
+      await saveMenuConfig({ season, mode });
+      const seasonLabel =
+        SEASON_OPTIONS.find((option) => option.value === season)?.label ?? season;
+      toast({
+        title: "Theme updated",
+        description: `All visitors now see the ${seasonLabel} ${mode} theme.`,
+      });
+    } catch (error) {
+      console.error("Failed to save theme:", error);
+      toast({
+        title: "Couldn't update theme",
+        description: "Please try again in a moment.",
+        variant: "destructive",
+      });
+    }
+  };
+
   return (
     <div className="min-h-screen bg-background text-foreground">
       <header className="border-b border-border/40 bg-background/95 backdrop-blur-sm">
@@ -406,6 +442,61 @@ const MenuAdmin = () => {
                 scan for guests.
               </p>
             </div>
+
+            <Card className="border-border/60 bg-card/60 backdrop-blur">
+              <CardHeader>
+                <CardTitle className="text-base md:text-lg">Seasonal theme</CardTitle>
+                <p className="text-xs text-muted-foreground">
+                  Pick the look for the whole site. Saved instantly and applied to every visitor.
+                </p>
+              </CardHeader>
+              <CardContent className="space-y-5">
+                <div className="space-y-2">
+                  <Label className="text-xs uppercase tracking-[0.2em]">Season</Label>
+                  <div className="grid grid-cols-2 gap-2 sm:grid-cols-4">
+                    {SEASON_OPTIONS.map((option) => {
+                      const isSelected = currentSeason === option.value;
+                      return (
+                        <button
+                          key={option.value}
+                          type="button"
+                          onClick={() => handleThemeChange({ season: option.value })}
+                          aria-pressed={isSelected}
+                          className={`flex flex-col items-center gap-1 rounded-lg border px-3 py-3 text-xs transition-colors ${
+                            isSelected
+                              ? "border-primary bg-primary/10 text-foreground"
+                              : "border-border/60 bg-card/60 text-muted-foreground hover:border-primary/50 hover:text-foreground"
+                          }`}
+                        >
+                          <span className="text-lg" aria-hidden="true">
+                            {option.emoji}
+                          </span>
+                          <span className="uppercase tracking-[0.16em]">{option.label}</span>
+                        </button>
+                      );
+                    })}
+                  </div>
+                </div>
+
+                <div className="flex items-center justify-between rounded-lg border border-border/60 bg-card/60 px-4 py-3">
+                  <div className="space-y-0.5">
+                    <Label htmlFor="theme-mode" className="text-xs uppercase tracking-[0.2em]">
+                      Dark mode
+                    </Label>
+                    <p className="text-xs text-muted-foreground">
+                      {currentMode === "dark" ? "Dark" : "Light"} appearance is active.
+                    </p>
+                  </div>
+                  <Switch
+                    id="theme-mode"
+                    checked={currentMode === "dark"}
+                    onCheckedChange={(checked) =>
+                      handleThemeChange({ mode: checked ? "dark" : "light" })
+                    }
+                  />
+                </div>
+              </CardContent>
+            </Card>
 
             <Card className="border-border/60 bg-card/60 backdrop-blur">
               <CardHeader>

@@ -36,6 +36,9 @@ export type NewMenuItemInput = Omit<MenuItemDoc, "sortOrder"> & {
 
 export type UpdateMenuItemInput = Partial<MenuItemDoc>;
 
+export type ThemeSeason = "spring" | "summer" | "autumn" | "winter";
+export type ThemeMode = "light" | "dark";
+
 export type MenuConfig = {
   sweeteners: string[];
   milks: string[];
@@ -45,6 +48,8 @@ export type MenuConfig = {
   heroBody?: string;
   menuTitle?: string;
   menuBody?: string;
+  season?: ThemeSeason;
+  mode?: ThemeMode;
 };
 
 const menuItemsCollection = collection(db, "menuItems");
@@ -103,6 +108,8 @@ export function subscribeToMenuConfig(
         heroBody: data?.heroBody ?? "",
         menuTitle: data?.menuTitle ?? "",
         menuBody: data?.menuBody ?? "",
+        season: data?.season ?? "winter",
+        mode: data?.mode ?? "dark",
       };
 
       onNext(config);
@@ -132,7 +139,7 @@ export async function updateMenuItem(id: string, input: UpdateMenuItemInput) {
   await updateDoc(ref, input);
 }
 
-export async function saveMenuConfig(config: MenuConfig) {
+export async function saveMenuConfig(config: Partial<MenuConfig>) {
   await setDoc(menuConfigDocRef, config, { merge: true });
 }
 

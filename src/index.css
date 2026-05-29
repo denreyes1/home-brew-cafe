@@ -1,3 +1,5 @@
+@import url('https://fonts.googleapis.com/css2?family=Manrope:wght@300;400;500;600;700&family=Playfair+Display:wght@500;600;700&display=swap');
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -129,6 +131,158 @@ All colors MUST be HSL.
     --sidebar-border: 240 3.7% 15.9%;
     --sidebar-ring: 217.2 91.2% 59.8%;
   }
+
+  /* ===========================================================
+     Seasonal palettes.
+     Winter (the original festive look) is the base :root / .dark
+     above. The blocks below override colors per season.
+     Light variants come first, dark variants after, so that in
+     dark mode the .dark[data-season] block wins on equal specificity.
+     =========================================================== */
+
+  /* --- Spring (light): pine green, steel blue, muted moss (masculine) --- */
+  :root[data-season="spring"] {
+    --background: 150 12% 95%;
+    --foreground: 160 20% 15%;
+    --card: 150 14% 98%;
+    --card-foreground: 160 20% 15%;
+    --popover: 150 14% 97%;
+    --popover-foreground: 160 20% 15%;
+    --primary: 160 38% 34%;
+    --primary-foreground: 0 0% 98%;
+    --secondary: 205 30% 40%;
+    --secondary-foreground: 0 0% 98%;
+    --muted: 150 10% 88%;
+    --muted-foreground: 160 9% 35%;
+    --accent: 80 32% 44%;
+    --accent-foreground: 0 0% 98%;
+    --border: 150 12% 80%;
+    --input: 150 12% 80%;
+    --ring: 160 38% 34%;
+    --gradient-warm: linear-gradient(135deg, hsl(205 30% 44% / 0.14), hsl(160 38% 38% / 0.14));
+    --gradient-hero: linear-gradient(180deg, hsl(150 14% 90%) 0%, hsl(160 16% 82%) 100%);
+    --gradient-graffiti: linear-gradient(45deg, hsl(160 40% 36%), hsl(205 32% 42%), hsl(80 34% 46%));
+  }
+
+  /* --- Summer (light): deep teal, navy, bronze (masculine) --- */
+  :root[data-season="summer"] {
+    --background: 200 16% 95%;
+    --foreground: 205 25% 15%;
+    --card: 200 18% 98%;
+    --card-foreground: 205 25% 15%;
+    --popover: 200 18% 97%;
+    --popover-foreground: 205 25% 15%;
+    --primary: 195 55% 32%;
+    --primary-foreground: 0 0% 98%;
+    --secondary: 215 40% 38%;
+    --secondary-foreground: 0 0% 98%;
+    --muted: 200 12% 88%;
+    --muted-foreground: 205 11% 35%;
+    --accent: 30 50% 46%;
+    --accent-foreground: 0 0% 98%;
+    --border: 200 14% 79%;
+    --input: 200 14% 79%;
+    --ring: 195 55% 32%;
+    --gradient-warm: linear-gradient(135deg, hsl(215 40% 42% / 0.14), hsl(195 55% 36% / 0.14));
+    --gradient-hero: linear-gradient(180deg, hsl(200 16% 90%) 0%, hsl(205 20% 80%) 100%);
+    --gradient-graffiti: linear-gradient(45deg, hsl(195 55% 34%), hsl(215 42% 40%), hsl(30 52% 48%));
+  }
+
+  /* --- Autumn (light): rust, oxblood, dark gold (masculine) --- */
+  :root[data-season="autumn"] {
+    --background: 30 16% 94%;
+    --foreground: 25 25% 14%;
+    --card: 30 18% 98%;
+    --card-foreground: 25 25% 14%;
+    --popover: 30 18% 97%;
+    --popover-foreground: 25 25% 14%;
+    --primary: 20 60% 40%;
+    --primary-foreground: 0 0% 98%;
+    --secondary: 10 42% 32%;
+    --secondary-foreground: 0 0% 98%;
+    --muted: 30 13% 86%;
+    --muted-foreground: 25 12% 33%;
+    --accent: 38 52% 44%;
+    --accent-foreground: 0 0% 98%;
+    --border: 30 15% 77%;
+    --input: 30 15% 77%;
+    --ring: 20 60% 40%;
+    --gradient-warm: linear-gradient(135deg, hsl(10 42% 38% / 0.14), hsl(20 60% 44% / 0.14));
+    --gradient-hero: linear-gradient(180deg, hsl(30 16% 89%) 0%, hsl(28 18% 79%) 100%);
+    --gradient-graffiti: linear-gradient(45deg, hsl(20 60% 42%), hsl(10 44% 36%), hsl(38 54% 46%));
+  }
+
+  /* --- Spring (dark) --- */
+  .dark[data-season="spring"] {
+    --background: 160 16% 9%;
+    --foreground: 150 12% 90%;
+    --card: 160 14% 13%;
+    --card-foreground: 150 12% 90%;
+    --popover: 160 14% 13%;
+    --popover-foreground: 150 12% 90%;
+    --primary: 160 40% 44%;
+    --primary-foreground: 0 0% 98%;
+    --secondary: 205 36% 52%;
+    --secondary-foreground: 0 0% 98%;
+    --muted: 160 11% 22%;
+    --muted-foreground: 150 9% 66%;
+    --accent: 80 34% 52%;
+    --accent-foreground: 160 20% 10%;
+    --border: 160 12% 26%;
+    --input: 160 12% 26%;
+    --ring: 160 40% 44%;
+    --gradient-warm: linear-gradient(135deg, hsl(205 36% 42% / 0.24), hsl(160 40% 38% / 0.24));
+    --gradient-hero: linear-gradient(180deg, hsl(160 18% 11%) 0%, hsl(160 20% 6%) 100%);
+    --gradient-graffiti: linear-gradient(45deg, hsl(160 42% 46%), hsl(205 38% 52%), hsl(80 36% 52%));
+  }
+
+  /* --- Summer (dark): deep ocean night --- */
+  .dark[data-season="summer"] {
+    --background: 205 28% 9%;
+    --foreground: 200 16% 90%;
+    --card: 205 24% 13%;
+    --card-foreground: 200 16% 90%;
+    --popover: 205 24% 13%;
+    --popover-foreground: 200 16% 90%;
+    --primary: 195 58% 44%;
+    --primary-foreground: 0 0% 98%;
+    --secondary: 215 46% 54%;
+    --secondary-foreground: 0 0% 98%;
+    --muted: 205 16% 22%;
+    --muted-foreground: 200 10% 66%;
+    --accent: 30 56% 52%;
+    --accent-foreground: 205 25% 10%;
+    --border: 205 18% 26%;
+    --input: 205 18% 26%;
+    --ring: 195 58% 44%;
+    --gradient-warm: linear-gradient(135deg, hsl(215 46% 44% / 0.24), hsl(195 58% 38% / 0.24));
+    --gradient-hero: linear-gradient(180deg, hsl(205 30% 11%) 0%, hsl(205 32% 6%) 100%);
+    --gradient-graffiti: linear-gradient(45deg, hsl(195 58% 44%), hsl(215 48% 54%), hsl(30 58% 52%));
+  }
+
+  /* --- Autumn (dark): leather brown, ember rust --- */
+  .dark[data-season="autumn"] {
+    --background: 25 22% 8%;
+    --foreground: 30 18% 90%;
+    --card: 25 20% 12%;
+    --card-foreground: 30 18% 90%;
+    --popover: 25 20% 12%;
+    --popover-foreground: 30 18% 90%;
+    --primary: 20 62% 50%;
+    --primary-foreground: 0 0% 98%;
+    --secondary: 10 48% 46%;
+    --secondary-foreground: 0 0% 98%;
+    --muted: 25 13% 20%;
+    --muted-foreground: 30 10% 66%;
+    --accent: 38 58% 50%;
+    --accent-foreground: 25 25% 10%;
+    --border: 25 15% 24%;
+    --input: 25 15% 24%;
+    --ring: 20 62% 50%;
+    --gradient-warm: linear-gradient(135deg, hsl(10 48% 42% / 0.24), hsl(20 62% 46% / 0.24));
+    --gradient-hero: linear-gradient(180deg, hsl(25 24% 10%) 0%, hsl(25 26% 5%) 100%);
+    --gradient-graffiti: linear-gradient(45deg, hsl(20 62% 48%), hsl(10 50% 46%), hsl(38 60% 50%));
+  }
 }
 
 @layer base {
@@ -147,8 +301,6 @@ All colors MUST be HSL.
     text-transform: none;
   }
 }
-
-@import url('https://fonts.googleapis.com/css2?family=Manrope:wght@300;400;500;600;700&family=Playfair+Display:wght@500;600;700&display=swap');
 
 /* Soft snowfall overlay */
 @keyframes snow-fall {
@@ -184,6 +336,100 @@ All colors MUST be HSL.
   animation-timing-function: linear;
   animation-iteration-count: infinite;
   text-shadow: 0 0 4px hsla(0, 0%, 100%, 0.18);
+}
+
+/* Spring petals drifting down */
+@keyframes petal-fall {
+  0% {
+    transform: translate3d(0, -10%, 0) rotate(0deg);
+    opacity: 0;
+  }
+  10% {
+    opacity: 0.9;
+  }
+  100% {
+    transform: translate3d(48px, 110vh, 0) rotate(360deg);
+    opacity: 0;
+  }
+}
+
+.petal {
+  position: absolute;
+  top: -10%;
+  color: hsl(150 22% 72% / 0.85);
+  font-size: 1rem;
+  line-height: 1;
+  will-change: transform, opacity;
+  animation-name: petal-fall;
+  animation-timing-function: ease-in-out;
+  animation-iteration-count: infinite;
+  text-shadow: 0 0 6px hsla(160, 25%, 55%, 0.3);
+}
+
+/* Autumn leaves swaying as they fall */
+@keyframes leaf-fall {
+  0% {
+    transform: translate3d(0, -10%, 0) rotate(0deg);
+    opacity: 0;
+  }
+  10% {
+    opacity: 0.95;
+  }
+  50% {
+    transform: translate3d(-34px, 55vh, 0) rotate(180deg);
+  }
+  100% {
+    transform: translate3d(34px, 110vh, 0) rotate(360deg);
+    opacity: 0;
+  }
+}
+
+.leaf {
+  position: absolute;
+  top: -10%;
+  font-size: 1.05rem;
+  line-height: 1;
+  will-change: transform, opacity;
+  animation-name: leaf-fall;
+  animation-timing-function: ease-in-out;
+  animation-iteration-count: infinite;
+}
+
+/* Summer fireflies floating upward */
+@keyframes firefly-float {
+  0% {
+    transform: translate3d(0, 0, 0);
+    opacity: 0;
+  }
+  20% {
+    opacity: 0.95;
+  }
+  50% {
+    transform: translate3d(22px, -34px, 0);
+    opacity: 1;
+  }
+  80% {
+    opacity: 0.5;
+  }
+  100% {
+    transform: translate3d(-12px, -68px, 0);
+    opacity: 0;
+  }
+}
+
+.firefly {
+  position: absolute;
+  width: 6px;
+  height: 6px;
+  border-radius: 999px;
+  background: hsl(50 95% 65%);
+  box-shadow:
+    0 0 6px hsl(48 95% 62% / 0.9),
+    0 0 12px hsl(45 95% 58% / 0.6);
+  will-change: transform, opacity;
+  animation-name: firefly-float;
+  animation-timing-function: ease-in-out;
+  animation-iteration-count: infinite;
 }
 
 /* Latte loading animation */
@@ -408,11 +654,11 @@ All colors MUST be HSL.
   0%,
   100% {
     opacity: 0.55;
-    box-shadow: 0 0 24px hsla(35, 70%, 60%, 0.4);
+    box-shadow: 0 0 24px hsl(var(--accent) / 0.4);
   }
   50% {
     opacity: 0.9;
-    box-shadow: 0 0 42px hsla(355, 65%, 55%, 0.7);
+    box-shadow: 0 0 42px hsl(var(--primary) / 0.7);
   }
 }
 
@@ -438,29 +684,29 @@ All colors MUST be HSL.
   animation: qr-orb-float 11s ease-in-out infinite alternate;
 }
 
-.qr-orb--red {
+.qr-orb--primary {
   width: 260px;
   height: 260px;
   top: 18%;
   left: 10%;
-  background: hsl(355 65% 55% / 0.7);
+  background: hsl(var(--primary) / 0.7);
 }
 
-.qr-orb--green {
+.qr-orb--secondary {
   width: 320px;
   height: 320px;
   bottom: 6%;
   right: 6%;
-  background: hsl(140 45% 42% / 0.7);
+  background: hsl(var(--secondary) / 0.7);
   animation-delay: 2s;
 }
 
-.qr-orb--gold {
+.qr-orb--accent {
   width: 220px;
   height: 220px;
   top: 28%;
   right: 18%;
-  background: hsl(35 70% 58% / 0.75);
+  background: hsl(var(--accent) / 0.75);
   animation-delay: 3.5s;
 }
 
@@ -469,9 +715,9 @@ All colors MUST be HSL.
   inset: -18px;
   border-radius: 1.75rem;
   background:
-    radial-gradient(circle at 50% 0%, hsla(35, 75%, 65%, 0.6), transparent 55%),
-    radial-gradient(circle at 0% 100%, hsla(140, 40%, 45%, 0.45), transparent 55%),
-    radial-gradient(circle at 100% 100%, hsla(355, 65%, 55%, 0.55), transparent 55%);
+    radial-gradient(circle at 50% 0%, hsl(var(--accent) / 0.6), transparent 55%),
+    radial-gradient(circle at 0% 100%, hsl(var(--secondary) / 0.45), transparent 55%),
+    radial-gradient(circle at 100% 100%, hsl(var(--primary) / 0.55), transparent 55%);
   opacity: 0.8;
   mix-blend-mode: screen;
   pointer-events: none;

@@ -1,31 +1,15 @@
-import { useEffect, useMemo, useState } from "react";
-import qr from "@/assets/qr.png";
+import { useEffect, useState } from "react";
+import { QRCodeSVG } from "qrcode.react";
+import { SeasonalEffects } from "@/components/SeasonalEffects";
+import { useSiteTheme } from "@/components/SiteThemeProvider";
 
-const Snowfall = () => {
-  const flakes = useMemo(
-    () =>
-      Array.from({ length: 40 }).map(() => ({
-        left: `${Math.random() * 100}%`,
-        animationDelay: `${Math.random() * -12}s`,
-        animationDuration: `${8 + Math.random() * 10}s`,
-      })),
-    [],
-  );
-
-  return (
-    <div className="snowfall-layer">
-      {flakes.map((style, idx) => (
-        <span key={idx} className="snowflake" style={style}>
-          ✦
-        </span>
-      ))}
-    </div>
-  );
-};
+const MENU_URL = "https://dna-cafe.onrender.com/";
 
 const Qr = () => {
   const bulbs = Array.from({ length: 9 });
   const [isFullscreen, setIsFullscreen] = useState(false);
+  const { season } = useSiteTheme();
+  const isWinter = season === "winter";
 
   useEffect(() => {
     if (typeof document === "undefined") return;
@@ -54,33 +38,35 @@ const Qr = () => {
 
   return (
     <div className="relative min-h-screen bg-gradient-hero text-foreground">
-      <Snowfall />
+      <SeasonalEffects />
 
       {/* Soft vignette & color wash */}
-      <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_top,_hsla(35,70%,60%,0.22),transparent_55%),radial-gradient(circle_at_bottom,_hsla(140,40%,40%,0.25),transparent_55%)] opacity-80 mix-blend-soft-light" />
+      <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_top,_hsl(var(--accent)/0.22),transparent_55%),radial-gradient(circle_at_bottom,_hsl(var(--secondary)/0.25),transparent_55%)] opacity-80 mix-blend-soft-light" />
 
-      {/* Floating festive orbs */}
+      {/* Floating seasonal orbs */}
       <div className="pointer-events-none absolute inset-0">
-        <div className="qr-orb qr-orb--red" />
-        <div className="qr-orb qr-orb--green" />
-        <div className="qr-orb qr-orb--gold" />
+        <div className="qr-orb qr-orb--primary" />
+        <div className="qr-orb qr-orb--secondary" />
+        <div className="qr-orb qr-orb--accent" />
       </div>
 
       <main className="relative z-10 flex flex-col items-center justify-center px-4 pb-16 pt-16">
-        {/* Garland of twinkling lights */}
-        <div className="qr-light-garland mb-6 md:mb-8">
-          {bulbs.map((_, idx) => {
-            const palette = ["qr-light--red", "qr-light--gold", "qr-light--green"];
-            const tone = palette[idx % palette.length];
-            return (
-              <div
-                key={idx}
-                className={`qr-light ${tone}`}
-                style={{ animationDelay: `${idx * 0.18}s` }}
-              />
-            );
-          })}
-        </div>
+        {/* Garland of twinkling lights (winter only) */}
+        {isWinter && (
+          <div className="qr-light-garland mb-6 md:mb-8">
+            {bulbs.map((_, idx) => {
+              const palette = ["qr-light--red", "qr-light--gold", "qr-light--green"];
+              const tone = palette[idx % palette.length];
+              return (
+                <div
+                  key={idx}
+                  className={`qr-light ${tone}`}
+                  style={{ animationDelay: `${idx * 0.18}s` }}
+                />
+              );
+            })}
+          </div>
+        )}
 
         {/* QR focal card */}
         <section className="relative w-full max-w-md">
@@ -108,11 +94,22 @@ const Qr = () => {
             <div className="mt-7 flex justify-center">
               <div className="relative inline-flex items-center justify-center rounded-2xl border border-border/70 bg-background/95 p-4 shadow-[0_0_0_1px_hsl(0_0%_100%/0.06)]">
                 <div className="pointer-events-none absolute inset-3 rounded-2xl border border-white/10" />
-                <img
-                  src={qr}
-                  alt="Scan to view the D&A Home Café menu"
-                  className="relative z-10 max-h-[260px] w-full max-w-[260px] rounded-xl bg-white object-contain shadow-[0_10px_30px_rgba(0,0,0,0.45)]"
-                />
+                <a
+                  href={MENU_URL}
+                  aria-label="Open the D&A Home Café menu"
+                  className="relative z-10 rounded-xl bg-white p-3 shadow-[0_10px_30px_rgba(0,0,0,0.45)]"
+                >
+                  <QRCodeSVG
+                    value={MENU_URL}
+                    size={256}
+                    level="M"
+                    marginSize={2}
+                    bgColor="#ffffff"
+                    fgColor="#000000"
+                    title="Scan to view the D&A Home Café menu"
+                    className="h-auto w-full max-w-[256px]"
+                  />
+                </a>
               </div>
             </div>
 
