@@ -6,7 +6,7 @@ const PARTICLE_COUNT: Record<ThemeSeason, number> = {
   winter: 40,
   spring: 30,
   autumn: 26,
-  summer: 22,
+  summer: 10,
 };
 
 const LEAF_GLYPHS = ["🍂", "🍁"];

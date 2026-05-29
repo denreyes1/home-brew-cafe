@@ -3,6 +3,19 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <script>
+      // Apply the last-seen theme synchronously to avoid a flash before Firestore loads.
+      (function () {
+        try {
+          var stored = localStorage.getItem("site-theme");
+          if (!stored) return;
+          var theme = JSON.parse(stored);
+          var root = document.documentElement;
+          if (theme && theme.season) root.setAttribute("data-season", theme.season);
+          if (theme && theme.mode) root.classList.toggle("dark", theme.mode === "dark");
+        } catch (e) {}
+      })();
+    </script>
     <title>D&A Home Café</title>
     <meta name="description" content="Experience artisanal coffee crafted with care in a cozy home café setting. Featuring lattes, cappuccinos, matcha, and more with premium customization options." />
     <meta name="author" content="My Home Café" />
